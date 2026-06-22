@@ -1,0 +1,70 @@
+---
+/**
+ * LanguagePicker.astro — Locale switcher (es / en / fr).
+ * RF-02: language switcher + first-visit browser-language detection.
+ * Detection uses sessionStorage only (no cookies, no personal data) — S9-06.
+ */
+import { useTranslations } from '../i18n/utils';
+import type { Locale } from '../i18n/utils';
+import { BASE_PATH } from '../config/site';
+
+export interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const t = useTranslations(locale);
+
+const base = BASE_PATH.replace(/\/$/, '');
+
+const options: { locale: Locale; hreflang: string; label: string; href: string; flag: string }[] = [
+  { locale: 'es', hreflang: 'es-CO', label: 'ES', href: `${base}/`,    flag: '🇨🇴' },
+  { locale: 'en', hreflang: 'en-US', label: 'EN', href: `${base}/en/`, flag: '🇬🇧' },
+  { locale: 'fr', hreflang: 'fr-FR', label: 'FR', href: `${base}/fr/`, flag: '🇫🇷' },
+];
+---
+
+<nav aria-label={t('lang.pick')} class="flex items-center gap-0.5 text-sm">
+  {options.map(({ locale: l, hreflang, label, href, flag }) => (
+    <a
+      href={href}
+      hreflang={hreflang}
+      aria-current={l === locale ? 'page' : undefined}
+      lang={hreflang}
+      title={t(`lang.${l}`)}
+      class:list={[
+        'flex items-center gap-1 rounded-md px-2 py-1 font-medium transition-colors duration-150',
+        l === locale
+          ? 'bg-primary text-white shadow-sm'
+          : 'text-neutral/70 hover:bg-primary/10 hover:text-neutral',
+      ]}
+    >
+      <span aria-hidden="true">{flag}</span>
+      <span>{label}</span>
+    </a>
+  ))}
+</nav>
+
+<!--
+  RF-02: first-visit browser language detection.
+  Uses sessionStorage (no cookies, no personal data — S9-06).
+  Only redirects when on the default (Spanish) locale and the browser language
+  is English or French. Marks the session as "done" immediately so it never
+  redirects more than once per tab session.
+-->
+<script define:vars={{ base, locale }}>
+  (function () {
+    const KEY = 'dis-lang-detected';
+    if (sessionStorage.getItem(KEY)) return;
+    sessionStorage.setItem(KEY, '1');
+
+    if (locale !== 'es') return; // only redirect from default locale page
+
+    const browserLang = (navigator.language || '').toLowerCase();
+    if (browserLang.startsWith('fr')) {
+      window.location.replace(base + '/fr/');
+    } else if (browserLang.startsWith('en')) {
+      window.location.replace(base + '/en/');
+    }
+  })();
+</script>

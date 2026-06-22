@@ -1,0 +1,137 @@
+/*
+ * global.css — Tailwind v4 entry point
+ * Theme tokens use Tailwind v4 @theme directive (no tailwind.config.js needed).
+ * Palette: amber/gold (primary warmth) + sky blue (secondary, pool/water)
+ * See spec section 7: Tailwind CSS recommended.
+ */
+@import "tailwindcss";
+
+@theme {
+  /* Brand colours */
+  --color-primary:       #f59e0b; /* amber-400 — sun, warmth, CTA */
+  --color-primary-dark:  #d97706; /* amber-600 — hover/active */
+  --color-secondary:     #0ea5e9; /* sky-500 — pool, water, links */
+  --color-secondary-dark:#0284c7; /* sky-600 — hover/active */
+  --color-accent:        #065f46; /* emerald-900 — nature, mountain */
+  --color-neutral:       #1c1917; /* stone-900 — body text */
+  --color-surface:       #fafaf9; /* stone-50 — light backgrounds */
+
+  /* Typography */
+  --font-family-sans: ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --font-family-heading: Georgia, ui-serif, serif;
+
+  /* Spacing extras */
+  --section-padding-y: 5rem;
+}
+
+/* ──────────────────────────────────────────────────────────
+   Accessibility: skip-to-main-content link (WCAG 2.4.1 Level A, NF-A11Y-01)
+   Visually hidden until keyboard-focused; appears at top-left on :focus-visible.
+────────────────────────────────────────────────────────── */
+.skip-link {
+  position: absolute;
+  top: -100%;
+  left: 1rem;
+  z-index: 9999;
+  padding: 0.5rem 1rem;
+  background: var(--color-primary);
+  color: #fff;
+  font-weight: 700;
+  font-size: 0.9rem;
+  border-radius: 0 0 0.5rem 0.5rem;
+  text-decoration: none;
+  transition: top 0.15s ease;
+}
+.skip-link:focus-visible {
+  top: 0;
+  outline: 3px solid var(--color-neutral);
+  outline-offset: 2px;
+}
+
+/* ──────────────────────────────────────────────────────────
+   Base
+────────────────────────────────────────────────────────── */
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--font-family-sans);
+  color: var(--color-neutral);
+  background-color: var(--color-surface);
+}
+
+/* ──────────────────────────────────────────────────────────
+   PI-02: Disable right-click context menu on images (content protection)
+   and prevent drag-and-drop of images (spec section 13.1).
+   JS contextmenu handler is wired in Hero.astro and Gallery.astro.
+   Does NOT block F12 or DevTools — explicitly forbidden in 13.1.1.
+────────────────────────────────────────────────────────── */
+img {
+  -webkit-user-drag: none;
+  user-drag: none;
+}
+
+/* ──────────────────────────────────────────────────────────
+   PI-06: Disable text selection on promotional key elements only.
+   Applied via .no-select utility class — not on body globally.
+────────────────────────────────────────────────────────── */
+.no-select {
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+/* ──────────────────────────────────────────────────────────
+   Accessibility: focus-visible ring for keyboard navigation (WCAG 2.2 AA)
+────────────────────────────────────────────────────────── */
+:focus-visible {
+  outline: 3px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+/* ──────────────────────────────────────────────────────────
+   Prefers-reduced-motion: disable all decorative animations (WCAG 2.3)
+────────────────────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ──────────────────────────────────────────────────────────
+   Scroll margin for anchor targets (fixed nav offset)
+────────────────────────────────────────────────────────── */
+section[id] {
+  scroll-margin-top: 60px;
+}
+@keyframes hero-crossfade {
+  0%   { opacity: 1; }
+  38%  { opacity: 1; }
+  50%  { opacity: 0; }
+  100% { opacity: 0; }
+}
+
+.hero-slide {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  animation: hero-crossfade 12s ease-in-out infinite;
+}
+
+/* ──────────────────────────────────────────────────────────
+   Gallery lightbox dialog reset
+────────────────────────────────────────────────────────── */
+dialog::backdrop {
+  background: rgba(0, 0, 0, 0.92);
+}
+
+dialog[open] {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}

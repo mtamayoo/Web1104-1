@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+
+# Disallow direct folder browsing of assets (PI-03: avoid indexing asset directories)
+Disallow: /galeria/
+Disallow: /materiales/
+
+Sitemap: https://mtamayoo.github.io/Web1104-1/sitemap-index.xml

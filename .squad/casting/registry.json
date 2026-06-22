@@ -1,0 +1,36 @@
+{
+  "agents": {
+    "data": {
+      "persistent_name": "Data",
+      "universe": "The Goonies",
+      "role": "Lead / Architect",
+      "created_at": "2026-06-22",
+      "legacy_named": false,
+      "status": "active"
+    },
+    "mouth": {
+      "persistent_name": "Mouth",
+      "universe": "The Goonies",
+      "role": "Frontend Developer",
+      "created_at": "2026-06-22",
+      "legacy_named": false,
+      "status": "active"
+    },
+    "sloth": {
+      "persistent_name": "Sloth",
+      "universe": "The Goonies",
+      "role": "Security Reviewer",
+      "created_at": "2026-06-22",
+      "legacy_named": false,
+      "status": "active"
+    },
+    "chunk": {
+      "persistent_name": "Chunk",
+      "universe": "The Goonies",
+      "role": "QA / Functionality Reviewer",
+      "created_at": "2026-06-22",
+      "legacy_named": false,
+      "status": "active"
+    }
+  }
+}

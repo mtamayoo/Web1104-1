@@ -1,0 +1,109 @@
+---
+/**
+ * Footer.astro — Site footer with copyright, privacy policy, and legal notice.
+ * PI-07: copyright notice (spec section 13.1).
+ * Section 9: privacy policy (no personal data, Cloudflare analytics, Colombian/Spanish law).
+ * Section 13.1: extended legal/IP notice.
+ */
+import { useTranslations } from '../i18n/utils';
+import type { Locale } from '../i18n/utils';
+import { PROPERTY_NAME, BASE_PATH } from '../config/site';
+
+export interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const t = useTranslations(locale);
+
+const base = BASE_PATH.replace(/\/$/, '');
+
+const navLinks = [
+  { key: 'nav.home',      href: '#hero'        },
+  { key: 'nav.apartment', href: '#apartamento' },
+  { key: 'nav.amenities', href: '#amenidades'  },
+  { key: 'nav.santafe',   href: '#santa-fe'    },
+  { key: 'nav.gallery',   href: '#galeria'     },
+  { key: 'nav.location',  href: '#ubicacion'   },
+  { key: 'nav.materials', href: '#materiales'  },
+  { key: 'nav.book',      href: '#reservar'    },
+] as const;
+---
+
+<footer
+  aria-label="Site footer"
+  class="bg-neutral px-4 pt-14 pb-8 text-white"
+>
+  <div class="mx-auto max-w-7xl">
+    <!-- Top row: brand + nav links -->
+    <div class="grid gap-10 md:grid-cols-3 lg:grid-cols-4">
+      <!-- Brand -->
+      <div class="lg:col-span-2">
+        <p class="font-heading text-2xl font-bold text-primary no-select">✦ DI Sole</p>
+        <p class="mt-2 text-sm text-white/50 max-w-xs">
+          Apartasol 1104 · Citadela DI Sole<br/>Santa Fe de Antioquia, Antioquia, Colombia
+        </p>
+      </div>
+
+      <!-- Site navigation -->
+      <nav aria-label="Footer navigation" class="md:col-span-2 lg:col-span-2">
+        <ul class="grid grid-cols-2 gap-x-8 gap-y-2 text-sm" role="list">
+          {navLinks.map(({ key, href }) => (
+            <li>
+              <a
+                href={href}
+                class="text-white/50 transition-colors hover:text-white focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary"
+              >
+                {t(key)}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </nav>
+    </div>
+
+    <hr class="my-10 border-white/10" />
+
+    <!-- Legal expandable sections -->
+    <div class="grid gap-4 md:grid-cols-2">
+      <!-- Privacy policy (section 9, S9-04) -->
+      <details class="group rounded-lg border border-white/10">
+        <summary class="flex cursor-pointer items-center justify-between px-4 py-3 text-sm font-semibold text-white/70 hover:text-white focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary">
+          {t('footer.privacy_policy')}
+          <svg class="h-4 w-4 shrink-0 transition-transform group-open:rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+          </svg>
+        </summary>
+        <p class="px-4 pb-4 text-xs leading-relaxed text-white/40">
+          {t('footer.privacy_text')}
+        </p>
+      </details>
+
+      <!-- Legal notice (section 13.1, PI-07) -->
+      <details class="group rounded-lg border border-white/10">
+        <summary class="flex cursor-pointer items-center justify-between px-4 py-3 text-sm font-semibold text-white/70 hover:text-white focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary">
+          {t('footer.legal_notice')}
+          <svg class="h-4 w-4 shrink-0 transition-transform group-open:rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+          </svg>
+        </summary>
+        <p class="px-4 pb-4 text-xs leading-relaxed text-white/40">
+          {t('footer.legal_text')}
+        </p>
+      </details>
+    </div>
+
+    <hr class="my-6 border-white/10" />
+
+    <!-- Copyright (PI-07) -->
+    <div class="flex flex-col items-center gap-2 text-center sm:flex-row sm:justify-between">
+      <p class="text-xs text-white/30 no-select">{t('footer.copyright_extended')}</p>
+      <!-- Language links -->
+      <nav aria-label="Language switcher" class="flex gap-3 text-xs text-white/30">
+        <a href={`${base}/`}     hreflang="es-CO" lang="es-CO" class="hover:text-white transition-colors">ES</a>
+        <a href={`${base}/en/`} hreflang="en-US" lang="en-US" class="hover:text-white transition-colors">EN</a>
+        <a href={`${base}/fr/`} hreflang="fr-FR" lang="fr-FR" class="hover:text-white transition-colors">FR</a>
+      </nav>
+    </div>
+  </div>
+</footer>

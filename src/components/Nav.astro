@@ -1,0 +1,195 @@
+---
+/**
+ * Nav.astro — Fixed top navigation bar with smooth-scroll links and LanguagePicker.
+ * RF-01: fixed top menu, smooth scroll.
+ * WCAG 2.2 AA: keyboard accessible, aria-expanded on mobile hamburger.
+ */
+import LanguagePicker from './LanguagePicker.astro';
+import { useTranslations } from '../i18n/utils';
+import type { Locale } from '../i18n/utils';
+import { BASE_PATH } from '../config/site';
+
+export interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const t = useTranslations(locale);
+
+const sections = [
+  { key: 'nav.home',      href: '#hero'        },
+  { key: 'nav.apartment', href: '#apartamento' },
+  { key: 'nav.amenities', href: '#amenidades'  },
+  { key: 'nav.santafe',   href: '#santa-fe'    },
+  { key: 'nav.gallery',   href: '#galeria'     },
+  { key: 'nav.location',  href: '#ubicacion'   },
+  { key: 'nav.materials', href: '#materiales'  },
+] as const;
+---
+
+<header
+  id="site-header"
+  class="fixed top-0 left-0 right-0 z-50 border-b border-white/10 bg-neutral/95 backdrop-blur-md"
+  role="banner"
+>
+  <div class="mx-auto flex max-w-7xl items-center justify-between px-4 py-3">
+    <!-- Brand -->
+    <a
+      href={`${BASE_PATH}/`}
+      class="font-heading text-xl font-bold text-primary no-select focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+      aria-label="Apartasol 1104 DI Sole — Inicio"
+    >
+      <span aria-hidden="true">✦</span> DI Sole
+    </a>
+
+    <!-- Desktop nav -->
+    <nav
+      aria-label={t('nav.aria_main')}
+      class="hidden lg:block"
+    >
+      <ul class="flex items-center gap-1" role="list">
+        {sections.map(({ key, href }) => (
+          <li>
+            <a
+              href={href}
+              data-nav-link
+              class="nav-link rounded-md px-3 py-2 text-sm font-medium text-white/80 transition-colors duration-150 hover:bg-white/10 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+            >
+              {t(key)}
+            </a>
+          </li>
+        ))}
+        <!-- Book Now CTA in nav -->
+        <li>
+          <a
+            href="#reservar"
+            data-nav-link
+            class="ml-2 rounded-full bg-primary px-4 py-2 text-sm font-bold text-white shadow transition hover:bg-primary-dark focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary no-select"
+          >
+            {t('nav.book')}
+          </a>
+        </li>
+      </ul>
+    </nav>
+
+    <!-- Right side: language picker + hamburger -->
+    <div class="flex items-center gap-3">
+      <LanguagePicker locale={locale} />
+
+      <!-- Mobile hamburger -->
+      <button
+        id="nav-hamburger"
+        type="button"
+        aria-expanded="false"
+        aria-controls="nav-mobile-menu"
+        aria-label="Abrir menú de navegación"
+        class="flex h-9 w-9 items-center justify-center rounded-md text-white/80 hover:bg-white/10 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary lg:hidden"
+      >
+        <!-- Hamburger icon -->
+        <svg id="icon-menu" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+        </svg>
+        <!-- Close icon (hidden initially) -->
+        <svg id="icon-close" class="hidden h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- Mobile menu drawer -->
+  <div
+    id="nav-mobile-menu"
+    role="region"
+    aria-label={t('nav.aria_main')}
+    class="hidden border-t border-white/10 bg-neutral/98 lg:hidden"
+  >
+    <nav>
+      <ul class="flex flex-col px-4 py-3" role="list">
+        {sections.map(({ key, href }) => (
+          <li>
+            <a
+              href={href}
+              data-nav-link
+              class="block rounded-md px-3 py-3 text-base font-medium text-white/80 transition-colors hover:bg-white/10 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+            >
+              {t(key)}
+            </a>
+          </li>
+        ))}
+        <li class="pt-2">
+          <a
+            href="#reservar"
+            data-nav-link
+            class="block rounded-full bg-primary px-4 py-3 text-center text-base font-bold text-white shadow transition hover:bg-primary-dark focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary no-select"
+          >
+            {t('nav.book')}
+          </a>
+        </li>
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<!-- Spacer to prevent content from hiding under fixed header -->
+<div class="h-[57px]" aria-hidden="true"></div>
+
+<script>
+  const hamburger = document.getElementById('nav-hamburger');
+  const mobileMenu = document.getElementById('nav-mobile-menu');
+  const iconMenu   = document.getElementById('icon-menu');
+  const iconClose  = document.getElementById('icon-close');
+
+  function openMenu() {
+    mobileMenu?.classList.remove('hidden');
+    hamburger?.setAttribute('aria-expanded', 'true');
+    hamburger?.setAttribute('aria-label', 'Cerrar menú de navegación');
+    iconMenu?.classList.add('hidden');
+    iconClose?.classList.remove('hidden');
+  }
+
+  function closeMenu() {
+    mobileMenu?.classList.add('hidden');
+    hamburger?.setAttribute('aria-expanded', 'false');
+    hamburger?.setAttribute('aria-label', 'Abrir menú de navegación');
+    iconMenu?.classList.remove('hidden');
+    iconClose?.classList.add('hidden');
+  }
+
+  hamburger?.addEventListener('click', () => {
+    const isOpen = hamburger.getAttribute('aria-expanded') === 'true';
+    isOpen ? closeMenu() : openMenu();
+  });
+
+  // Close mobile menu on nav link click
+  document.querySelectorAll('[data-nav-link]').forEach((link) => {
+    link.addEventListener('click', () => closeMenu());
+  });
+
+  // Active section highlighting via IntersectionObserver
+  const navLinks = document.querySelectorAll('[data-nav-link]');
+  const sections = document.querySelectorAll('section[id], div[id="hero"]');
+
+  const observer = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          const id = entry.target.getAttribute('id');
+          navLinks.forEach((link) => {
+            const href = link.getAttribute('href');
+            if (href === `#${id}`) {
+              link.classList.add('text-primary');
+              link.classList.remove('text-white/80');
+            } else {
+              link.classList.remove('text-primary');
+              link.classList.add('text-white/80');
+            }
+          });
+        }
+      });
+    },
+    { rootMargin: '-50% 0px -50% 0px' }
+  );
+
+  sections.forEach((s) => observer.observe(s));
+</script>

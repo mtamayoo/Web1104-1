@@ -1,0 +1,40 @@
+# public/_headers
+# ─────────────────────────────────────────────────────────────────────────────
+# Security headers for CDN / Cloudflare / Netlify deployments.
+# GitHub Pages CANNOT set HTTP response headers — these are only applied when
+# the site sits behind Cloudflare (proxied) or is deployed to Netlify/CF Pages.
+#
+# For GitHub Pages baseline security, a <meta http-equiv="Content-Security-Policy">
+# tag is included in the HTML <head> (src/layouts/Layout.astro).
+#
+# IMPORTANT: frame-ancestors 'none' is IGNORED inside <meta> CSP by all browsers.
+# It requires an HTTP header, which is why it is listed here.
+#
+# OBJ-SEC-03 (section 13.2): CSP, HSTS, X-Content-Type-Options, Referrer-Policy,
+# Permissions-Policy must be configured when hosting/CDN permits.
+# ─────────────────────────────────────────────────────────────────────────────
+
+/*
+  # Content Security Policy (OBJ-SEC-03)
+  # Note: 'unsafe-inline' in script-src can be replaced with nonces if a
+  # server-side render layer is added in a future phase (RF-10).
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' https://static.cloudflareinsights.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self'; connect-src 'self' https://cloudflareinsights.com; frame-src https://www.google.com https://maps.google.com https://www.google.com.co; object-src 'none'; base-uri 'self'; form-action 'none'; frame-ancestors 'none'; upgrade-insecure-requests;
+
+  # HSTS — requires HTTPS (OBJ-SEC-02). Only enable after confirming HTTPS is permanent.
+  # preload requires submission to the HSTS preload list; start without preload.
+  Strict-Transport-Security: max-age=31536000; includeSubDomains
+
+  # Prevent MIME-type sniffing (OBJ-SEC-03)
+  X-Content-Type-Options: nosniff
+
+  # Referrer leakage control (OBJ-SEC-03)
+  Referrer-Policy: strict-origin-when-cross-origin
+
+  # Permissions Policy — disable unneeded browser features (OBJ-SEC-03)
+  # geolocation=() can be loosened to geolocation=(self) if inline maps need it.
+  Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=(), interest-cohort=()
+
+  # Clickjacking fallback for older browsers that ignore frame-ancestors CSP
+  X-Frame-Options: DENY
+
+  # No secrets note: this file is public. Do NOT add API keys or tokens here.

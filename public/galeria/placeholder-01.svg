@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300" width="400" height="300" role="img" aria-label="Placeholder — foto del apartamento (pendiente)">
+  <rect width="400" height="300" fill="#1c1917"/>
+  <rect x="1" y="1" width="398" height="298" fill="none" stroke="#f59e0b" stroke-width="2" stroke-dasharray="8 4"/>
+  <text x="200" y="130" text-anchor="middle" font-family="sans-serif" font-size="16" fill="#f59e0b">DI Sole</text>
+  <text x="200" y="160" text-anchor="middle" font-family="sans-serif" font-size="12" fill="#78716c">PLACEHOLDER — foto apartamento</text>
+  <text x="200" y="180" text-anchor="middle" font-family="sans-serif" font-size="10" fill="#57534e">Reemplazar con imagen WebP real</text>
+</svg>

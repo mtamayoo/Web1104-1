@@ -1,0 +1,212 @@
+---
+/**
+ * src/layouts/Layout.astro
+ * Base layout for all pages.
+ * Includes: full SEO head, CSP meta, hreflang, Open Graph, Twitter Card,
+ * JSON-LD (LodgingBusiness / Apartment), global styles.
+ *
+ * Props
+ * ─────
+ * locale       : Locale                 current page locale
+ * title        : string                 <title> tag (localised)
+ * description  : string                 <meta name="description"> (localised)
+ * ogTitle      : string?                Open Graph title (defaults to title)
+ * ogDescription: string?                Open Graph description (defaults to description)
+ * ogImage      : string?                absolute URL to OG image (default: og-image.jpg)
+ * canonical    : string?                canonical URL override
+ */
+import type { Locale } from '../i18n/utils';
+import { getLangAttr, getOgLocale, useTranslations } from '../i18n/utils';
+import {
+  PROPERTY_NAME,
+  PROPERTY_LOCALITY,
+  PROPERTY_REGION,
+  PROPERTY_COUNTRY,
+  PROPERTY_MAX_GUESTS,
+  PROPERTY_BEDROOMS,
+  PROPERTY_BATHROOMS,
+  GEO_LAT,
+  GEO_LNG,
+  SITE_ORIGIN,
+  BASE_PATH,
+  CF_ANALYTICS_TOKEN,
+} from '../config/site';
+import '../styles/global.css';
+
+export interface Props {
+  locale: Locale;
+  title: string;
+  description: string;
+  ogTitle?: string;
+  ogDescription?: string;
+  ogImage?: string;
+  canonical?: string;
+}
+
+const {
+  locale,
+  title,
+  description,
+  ogTitle = title,
+  ogDescription = description,
+  ogImage,
+  canonical,
+} = Astro.props;
+
+const base = BASE_PATH.replace(/\/$/, '');
+const origin = SITE_ORIGIN.replace(/\/$/, '');
+
+const localeURLs: Record<Locale, string> = {
+  es: `${origin}${base}/`,
+  en: `${origin}${base}/en/`,
+  fr: `${origin}${base}/fr/`,
+};
+
+const canonicalURL = canonical ?? localeURLs[locale];
+const ogImageURL = ogImage ?? `${origin}${base}/og-image.png`;
+
+const t = useTranslations(locale);
+const langAttr = getLangAttr(locale);
+const ogLocale = getOgLocale(locale);
+
+// JSON-LD: LodgingBusiness + Apartment (spec section 8.1, RF-07)
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': ['LodgingBusiness', 'Apartment'],
+  name: PROPERTY_NAME,
+  description:
+    'Apartamento turístico premium para hasta 8 huéspedes en Santa Fe de Antioquia. Piscinas, toboganes, vistas a montaña y ambiente familiar.',
+  url: localeURLs[locale],
+  inLanguage: locale,
+  address: {
+    '@type': 'PostalAddress',
+    streetAddress: 'Citadela DI Sole, Apartasol 1104',
+    addressLocality: PROPERTY_LOCALITY,
+    addressRegion: PROPERTY_REGION,
+    addressCountry: PROPERTY_COUNTRY,
+  },
+  geo: {
+    '@type': 'GeoCoordinates',
+    latitude: GEO_LAT,
+    longitude: GEO_LNG,
+  },
+  maximumAttendeeCapacity: PROPERTY_MAX_GUESTS,
+  numberOfRooms: PROPERTY_BEDROOMS,
+  numberOfBathroomsTotal: PROPERTY_BATHROOMS,
+  amenityFeature: [
+    { '@type': 'LocationFeatureSpecification', name: 'Piscina',                     value: true },
+    { '@type': 'LocationFeatureSpecification', name: 'Toboganes acuáticos',          value: true },
+    { '@type': 'LocationFeatureSpecification', name: 'Gimnasio',                     value: true },
+    { '@type': 'LocationFeatureSpecification', name: 'Canchas deportivas',           value: true },
+    { '@type': 'LocationFeatureSpecification', name: 'Parque infantil',              value: true },
+    { '@type': 'LocationFeatureSpecification', name: 'Seguridad 24h',               value: true },
+    { '@type': 'LocationFeatureSpecification', name: 'Parqueadero',                  value: true },
+    { '@type': 'LocationFeatureSpecification', name: 'Aire acondicionado',           value: true },
+    { '@type': 'LocationFeatureSpecification', name: 'Lavadora',                     value: true },
+    { '@type': 'LocationFeatureSpecification', name: 'Balcón',                       value: true },
+    { '@type': 'LocationFeatureSpecification', name: 'Ascensor',                     value: true },
+  ],
+  // Hreflang via JSON-LD sameAs / potentialAction are omitted; hreflang tags cover this.
+};
+
+/*
+ * CSP DECISION (OBJ-SEC-03, section 13.2)
+ * GitHub Pages cannot set HTTP response headers, so CSP is delivered via <meta http-equiv>.
+ * IMPORTANT LIMITATIONS of meta CSP:
+ *   - frame-ancestors is IGNORED by browsers in <meta> CSP — use _headers file or CDN.
+ *   - Upgrade-insecure-requests and HSTS cannot be set via meta.
+ * See public/_headers for the full header set applied when a CDN/Cloudflare is in front.
+ * See .squad/decisions/inbox/data-csp-policy.md for rationale.
+ *
+ * Allowed sources:
+ *   scripts   : self + Cloudflare Analytics (static.cloudflareinsights.com)
+ *   styles    : self + unsafe-inline (Astro/Tailwind injects inline styles at build time)
+ *   images    : self + data: + https: (for external images/OG previews)
+ *   fonts     : self (no external font CDN in v1)
+ *   frames    : google.com (Google Maps embed — RF-07)
+ *   connect   : cloudflareinsights.com (analytics beacon)
+ *   object    : none (no Flash/plugins)
+ *   form-action: none (no forms in v1)
+ *   base-uri  : self
+ */
+const CSP = [
+  "default-src 'self'",
+  "script-src 'self' 'unsafe-inline' https://static.cloudflareinsights.com",
+  "style-src 'self' 'unsafe-inline'",
+  "img-src 'self' data: https:",
+  "font-src 'self'",
+  "connect-src 'self' https://cloudflareinsights.com",
+  "frame-src https://www.google.com https://maps.google.com https://www.google.com.co",
+  "object-src 'none'",
+  "base-uri 'self'",
+  "form-action 'none'",
+].join('; ');
+---
+
+<!doctype html>
+<html lang={langAttr} dir="ltr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <!-- ── Security: CSP via meta (GitHub Pages has no header control) ──── -->
+    <!-- NOTE: frame-ancestors is header-only; see public/_headers for CDN config -->
+    <meta http-equiv="Content-Security-Policy" content={CSP} />
+
+    <!-- ── Primary meta ──────────────────────────────────────────────────── -->
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <meta name="robots" content="index, follow" />
+    <link rel="canonical" href={canonicalURL} />
+
+    <!-- ── Hreflang alternates (RF-02, section 8.1) ─────────────────────────
+         DECISION: region-qualified codes (es-CO/en-US/fr-FR) used throughout
+         to be consistent with @astrojs/sitemap i18n config in astro.config.mjs.
+         Both sets are valid per Google; consistency avoids SEO-06 advisory.
+    ─────────────────────────────────────────────────────────────────────── -->
+    <link rel="alternate" hreflang="es-CO"     href={localeURLs.es} />
+    <link rel="alternate" hreflang="en-US"     href={localeURLs.en} />
+    <link rel="alternate" hreflang="fr-FR"     href={localeURLs.fr} />
+    <link rel="alternate" hreflang="x-default" href={localeURLs.es} />
+
+    <!-- ── Open Graph (section 8.1 — WhatsApp, Facebook, LinkedIn) ───────── -->
+    <meta property="og:type"        content="website" />
+    <meta property="og:url"         content={canonicalURL} />
+    <meta property="og:title"       content={ogTitle} />
+    <meta property="og:description" content={ogDescription} />
+    <meta property="og:image"       content={ogImageURL} />
+    <meta property="og:locale"      content={ogLocale} />
+    <meta property="og:site_name"   content={PROPERTY_NAME} />
+
+    <!-- ── Twitter / X Card (section 8.1) ───────────────────────────────── -->
+    <meta name="twitter:card"        content="summary_large_image" />
+    <meta name="twitter:title"       content={ogTitle} />
+    <meta name="twitter:description" content={ogDescription} />
+    <meta name="twitter:image"       content={ogImageURL} />
+
+    <!-- ── JSON-LD: LodgingBusiness / Apartment (section 8.1, RF-07) ────── -->
+    <script type="application/ld+json" set:html={JSON.stringify(jsonLd, null, 2)} />
+
+    <!-- ── Cloudflare Web Analytics (section 8.3) ───────────────────────── -->
+    <!-- Activated only when CF_ANALYTICS_TOKEN is set in src/config/site.ts -->
+    {CF_ANALYTICS_TOKEN && (
+      <script
+        defer
+        src="https://static.cloudflareinsights.com/beacon.min.js"
+        data-cf-beacon={`{"token":"${CF_ANALYTICS_TOKEN}"}`}
+      />
+    )}
+
+    <!-- ── Additional head content from pages ────────────────────────────── -->
+    <slot name="head" />
+  </head>
+
+  <body class="min-h-screen bg-surface text-neutral">
+    <!-- ── WCAG 2.4.1 Level A: skip-to-main-content (NF-A11Y-01) ──────────
+         Visually hidden until Tab-focused; class .skip-link in global.css
+         reveals it at top of viewport on :focus-visible. Targets #main-content.
+    ────────────────────────────────────────────────────────────────────── -->
+    <a href="#main-content" class="skip-link">{t('nav.skip_to_content')}</a>
+    <slot />
+  </body>
+</html>

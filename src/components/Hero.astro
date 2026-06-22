@@ -1,0 +1,169 @@
+---
+/**
+ * Hero.astro — Full-screen hero with CSS crossfade photo montage, slogan, and CTAs.
+ * RF-03: animated photos, slogan "Te va a encantar", Booking (primary) + Airbnb (secondary).
+ * RF-04: Booking CTA is visually more prominent.
+ * RF-06: "DI Sole" brand overlay on all slides.
+ * PI-02: right-click / drag disabled on images (via global CSS + contextmenu listener).
+ * Performance: CSS-only animation (no JS for slides), first img eager for LCP.
+ * prefers-reduced-motion: animation disabled via global CSS media query.
+ */
+import { useTranslations } from '../i18n/utils';
+import type { Locale } from '../i18n/utils';
+import { BOOKING_URL, AIRBNB_URL } from '../config/site';
+
+export interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const t = useTranslations(locale);
+
+// Hero slides — add real WebP photos to public/galeria/ and list them here.
+// Keep alt="" (decorative; textual content is in h1/p below).
+//
+// OWNER — RESPONSIVE IMAGE SETUP (NF-IMG-06):
+// When you drop real photos in, use the Astro <Picture> component for AVIF+WebP srcset:
+//
+//   import { Picture } from 'astro:assets';
+//   import photo01 from '../assets/galeria/foto-01.jpg';  ← put originals in src/assets/
+//
+//   <Picture
+//     src={photo01}
+//     formats={['avif', 'webp']}
+//     widths={[640, 1024, 1440, 1920]}
+//     sizes="100vw"
+//     alt=""
+//     width={1920}
+//     height={1080}
+//     loading="eager"          ← first slide only (LCP)
+//     fetchpriority="high"     ← first slide only (LCP)
+//     decoding="sync"
+//     class="absolute inset-0 h-full w-full object-cover mix-blend-overlay"
+//   />
+//
+// For SVG placeholders srcset lists the single source; replace with multi-width
+// versions when real raster photos are available.
+const slides = [
+  {
+    src: '/galeria/placeholder-01.svg',
+    alt: '',
+    gradient: 'linear-gradient(135deg, rgba(245,158,11,0.55) 0%, rgba(14,165,233,0.45) 100%)',
+    delay: '0s',
+  },
+  {
+    src: '/galeria/placeholder-02.svg',
+    alt: '',
+    gradient: 'linear-gradient(135deg, rgba(6,95,70,0.55) 0%, rgba(245,158,11,0.45) 100%)',
+    delay: '6s',
+  },
+] as const;
+---
+
+<section
+  id="hero"
+  aria-labelledby="hero-heading"
+  class="relative flex min-h-screen items-center justify-center overflow-hidden bg-neutral"
+>
+  <!-- ── Slideshow (decorative, aria-hidden) ───────────────────────── -->
+  <div class="absolute inset-0" aria-hidden="true">
+    {slides.map(({ src, alt, gradient, delay }, i) => (
+      <div
+        class="hero-slide"
+        style={`animation-delay: ${delay};`}
+      >
+        <!-- Coloured gradient overlay gives visual richness while real photos are pending -->
+        <div
+          class="absolute inset-0"
+          style={`background: ${gradient};`}
+        ></div>
+        <img
+          src={src}
+          srcset={`${src} 1920w`}
+          sizes="100vw"
+          alt={alt}
+          width="1920"
+          height="1080"
+          class="absolute inset-0 h-full w-full object-cover mix-blend-overlay"
+          loading={i === 0 ? 'eager' : 'lazy'}
+          fetchpriority={i === 0 ? 'high' : 'auto'}
+          decoding={i === 0 ? 'sync' : 'async'}
+        />
+      </div>
+    ))}
+  </div>
+
+  <!-- Dark overlay for text contrast -->
+  <div class="absolute inset-0 bg-neutral/55" aria-hidden="true"></div>
+
+  <!-- RF-06: Brand watermark overlay -->
+  <div
+    class="absolute bottom-6 right-6 z-10 no-select select-none"
+    aria-hidden="true"
+  >
+    <span class="rounded-md bg-black/30 px-3 py-1 font-heading text-sm font-bold text-white/80 backdrop-blur-sm">
+      ✦ DI Sole
+    </span>
+  </div>
+
+  <!-- ── Hero content ─────────────────────────────────────────────── -->
+  <div class="relative z-10 mx-auto max-w-3xl px-4 text-center text-white">
+    <!-- PI-06: no-select on key promotional text -->
+    <p class="mb-4 text-sm font-semibold uppercase tracking-widest text-primary no-select">
+      Apartasol 1104 · Citadela DI Sole · Santa Fe de Antioquia
+    </p>
+    <h1
+      id="hero-heading"
+      class="font-heading text-5xl font-bold leading-tight no-select drop-shadow-lg md:text-7xl"
+    >
+      {t('hero.slogan')}
+    </h1>
+    <p class="mt-5 text-xl font-light no-select drop-shadow md:text-2xl">
+      {t('hero.subtitle')}
+    </p>
+
+    <!-- CTAs — RF-04: Booking is primary (larger, filled), Airbnb is secondary -->
+    <div class="mt-10 flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
+      <!-- Primary CTA: Booking -->
+      <a
+        href={BOOKING_URL}
+        target="_blank"
+        rel="noopener noreferrer"
+        class="inline-flex items-center gap-2 rounded-full bg-primary px-9 py-4 text-lg font-bold text-white shadow-2xl transition hover:bg-primary-dark hover:scale-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
+        aria-label={t('hero.cta_booking')}
+      >
+        <svg class="h-5 w-5 shrink-0" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
+          <path d="M3 4a1 1 0 000 2h1v10a1 1 0 001 1h10a1 1 0 001-1V6h1a1 1 0 100-2H3zm5 4a1 1 0 112 0v5a1 1 0 11-2 0V8zm4 0a1 1 0 112 0v5a1 1 0 11-2 0V8z"/>
+        </svg>
+        {t('hero.cta_booking')}
+      </a>
+
+      <!-- Secondary CTA: Airbnb -->
+      <a
+        href={AIRBNB_URL}
+        target="_blank"
+        rel="noopener noreferrer"
+        class="inline-flex items-center gap-2 rounded-full border-2 border-white/70 px-7 py-[14px] text-base font-semibold text-white backdrop-blur-sm transition hover:bg-white/15 hover:border-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
+        aria-label={t('hero.cta_airbnb')}
+      >
+        {t('hero.cta_airbnb')}
+      </a>
+    </div>
+
+    <!-- Scroll indicator -->
+    <div class="mt-14 flex justify-center" aria-hidden="true">
+      <span class="animate-bounce text-white/50">
+        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 9l-7 7-7-7"/>
+        </svg>
+      </span>
+    </div>
+  </div>
+</section>
+
+<script>
+  // PI-02: disable right-click context menu on hero images (content protection)
+  document.querySelectorAll('#hero img').forEach((img) => {
+    img.addEventListener('contextmenu', (e) => e.preventDefault());
+  });
+</script>

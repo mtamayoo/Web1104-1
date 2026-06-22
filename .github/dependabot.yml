@@ -1,0 +1,39 @@
+# .github/dependabot.yml
+# Automated dependency updates (OBJ-SEC-04: section 13.2).
+# Dependabot will open PRs for npm and GitHub Actions updates weekly.
+version: 2
+
+updates:
+  # npm packages
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    open-pull-requests-limit: 10
+    groups:
+      # Group Astro core and integrations into a single PR
+      astro:
+        patterns:
+          - "astro"
+          - "@astrojs/*"
+      # Group Tailwind and PostCSS into a single PR
+      tailwind:
+        patterns:
+          - "tailwindcss"
+          - "@tailwindcss/*"
+          - "postcss"
+    labels:
+      - "dependencies"
+      - "security"
+
+  # GitHub Actions — keep workflow actions up to date
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    open-pull-requests-limit: 5
+    labels:
+      - "dependencies"
+      - "github-actions"

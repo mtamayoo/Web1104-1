@@ -1,0 +1,348 @@
+---
+/**
+ * Gallery.astro — Photo gallery with category filter and accessible fullscreen lightbox.
+ * RF-05: fullscreen photo viewing on mobile and desktop.
+ * RF-06: brand overlay on photos (PI-02: right-click/drag disabled on images).
+ * PI-01: web-optimised placeholder images; real photos drop in as WebP to public/galeria/.
+ * WCAG: keyboard navigation (Esc, arrows), focus trap inside dialog, aria-modal.
+ */
+import { useTranslations } from '../i18n/utils';
+import type { Locale } from '../i18n/utils';
+
+export interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const t = useTranslations(locale);
+
+// Gallery items — replace src with real WebP images when photos are delivered.
+// Keep the category field and alt text structure; it drives filter + lightbox.
+//
+// OWNER — RESPONSIVE IMAGE SETUP (NF-IMG-06):
+// When real photos arrive, use Astro <Picture> for AVIF+WebP+srcset:
+//
+//   import { Picture } from 'astro:assets';
+//   import foto01 from '../assets/galeria/foto-01.jpg';  ← put originals in src/assets/
+//
+//   <Picture
+//     src={foto01}
+//     formats={['avif', 'webp']}
+//     widths={[400, 800]}
+//     sizes="(min-width: 1280px) calc(25vw - 2rem), (min-width: 640px) calc(33vw - 1.5rem), calc(50vw - 1rem)"
+//     alt={localizedAlt[i]}
+//     width={400}
+//     height={300}
+//     loading="lazy"
+//     decoding="async"
+//     class="aspect-[4/3] w-full object-cover transition-transform duration-300 group-hover:scale-105"
+//   />
+//
+// SVG placeholder srcset lists the single source; replace with multi-width entries
+// (e.g. "foto-400.webp 400w, foto-800.webp 800w") when raster photos are ready.
+const galleryItems = [
+  { src: '/galeria/placeholder-01.svg', alt: { es: 'Vista del apartamento — foto pendiente', en: 'Apartment view — photo pending', fr: 'Vue de l\'appartement — photo à venir' }, category: 'apartment' },
+  { src: '/galeria/placeholder-02.svg', alt: { es: 'Piscinas del complejo — foto pendiente', en: 'Complex pools — photo pending', fr: 'Piscines du complexe — photo à venir' }, category: 'pools' },
+  { src: '/galeria/placeholder-01.svg', alt: { es: 'Sala de estar — foto pendiente', en: 'Living room — photo pending', fr: 'Salon — photo à venir' }, category: 'apartment' },
+  { src: '/galeria/placeholder-02.svg', alt: { es: 'Toboganes — foto pendiente', en: 'Water slides — photo pending', fr: 'Toboggans — photo à venir' }, category: 'pools' },
+  { src: '/galeria/placeholder-01.svg', alt: { es: 'Vista a la montaña — foto pendiente', en: 'Mountain view — photo pending', fr: 'Vue sur la montagne — photo à venir' }, category: 'views' },
+  { src: '/galeria/placeholder-02.svg', alt: { es: 'Santa Fe de Antioquia — foto pendiente', en: 'Santa Fe de Antioquia — photo pending', fr: 'Santa Fe de Antioquia — photo à venir' }, category: 'surroundings' },
+  { src: '/galeria/placeholder-01.svg', alt: { es: 'Cocina equipada — foto pendiente', en: 'Equipped kitchen — photo pending', fr: 'Cuisine équipée — photo à venir' }, category: 'apartment' },
+  { src: '/galeria/placeholder-02.svg', alt: { es: 'Vista a la piscina desde el balcón — foto pendiente', en: 'Pool view from balcony — photo pending', fr: 'Vue sur la piscine depuis le balcon — photo à venir' }, category: 'views' },
+] as const;
+
+type Category = 'all' | 'apartment' | 'pools' | 'views' | 'surroundings';
+
+const categories: { key: string; id: Category }[] = [
+  { key: 'gallery.cat_all',         id: 'all'         },
+  { key: 'gallery.cat_apartment',   id: 'apartment'   },
+  { key: 'gallery.cat_pools',       id: 'pools'       },
+  { key: 'gallery.cat_views',       id: 'views'       },
+  { key: 'gallery.cat_surroundings',id: 'surroundings'},
+];
+
+const localizedAlt = galleryItems.map((item) =>
+  item.alt[locale as keyof typeof item.alt] ?? item.alt['es']
+);
+---
+
+<section
+  id="galeria"
+  aria-labelledby="gallery-heading"
+  class="bg-neutral/5 px-4 py-20"
+>
+  <div class="mx-auto max-w-7xl">
+    <div class="flex items-center gap-3">
+      <span class="h-1 w-12 rounded-full bg-secondary" aria-hidden="true"></span>
+      <h2
+        id="gallery-heading"
+        class="font-heading text-3xl font-bold text-neutral md:text-4xl"
+      >
+        {t('gallery.heading')}
+      </h2>
+    </div>
+    <p class="mt-3 text-lg text-neutral/70">{t('gallery.subtitle')}</p>
+
+    <!-- Category filter tabs -->
+    <div role="group" aria-label={t('gallery.heading')} class="mt-8 flex flex-wrap gap-2">
+      {categories.map(({ key, id }) => (
+        <button
+          type="button"
+          data-filter={id}
+          aria-pressed={id === 'all' ? 'true' : 'false'}
+          class="gallery-filter rounded-full border border-neutral/20 px-4 py-2 text-sm font-medium transition-colors hover:bg-primary hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary data-[active]:bg-primary data-[active]:text-white data-[active]:border-primary"
+        >
+          {t(key)}
+        </button>
+      ))}
+    </div>
+
+    <!-- Photo grid -->
+    <ul
+      class="mt-8 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4"
+      role="list"
+      aria-label={t('gallery.heading')}
+      id="gallery-grid"
+    >
+      {galleryItems.map(({ src, category }, i) => (
+        <li data-category={category} class="gallery-item">
+          <button
+            type="button"
+            data-lightbox-index={i}
+            class="group relative w-full overflow-hidden rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+            aria-label={`${t('gallery.fullscreen_open')}: ${localizedAlt[i]}`}
+          >
+            <img
+              src={src}
+              srcset={`${src} 400w`}
+              sizes="(min-width: 1280px) calc(25vw - 2rem), (min-width: 640px) calc(33vw - 1.5rem), calc(50vw - 1rem)"
+              alt={localizedAlt[i]}
+              loading="lazy"
+              decoding="async"
+              width="400"
+              height="300"
+              class="aspect-[4/3] w-full object-cover transition-transform duration-300 group-hover:scale-105"
+            />
+            <!-- RF-06: Brand overlay on hover -->
+            <div
+              class="absolute inset-0 flex items-end justify-between bg-gradient-to-t from-neutral/60 to-transparent px-3 py-2 opacity-0 transition-opacity duration-200 group-hover:opacity-100 group-focus-visible:opacity-100"
+              aria-hidden="true"
+            >
+              <span class="text-xs font-bold text-white/90 no-select">✦ DI Sole</span>
+              <svg class="h-5 w-5 text-white/80" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"/>
+              </svg>
+            </div>
+          </button>
+        </li>
+      ))}
+    </ul>
+  </div>
+</section>
+
+<!-- Accessible lightbox dialog (RF-05, WCAG 2.2 AA) -->
+<dialog
+  id="gallery-lightbox"
+  aria-modal="true"
+  aria-labelledby="lb-title"
+  class="fixed inset-0 z-[100] m-0 h-full w-full max-w-none bg-transparent p-0"
+>
+  <!-- Backdrop handled via ::backdrop in global.css -->
+  <div class="flex h-full w-full flex-col items-center justify-center p-4">
+    <!-- Title for sr-only -->
+    <p id="lb-title" class="sr-only">{t('gallery.fullscreen_open')}</p>
+
+    <!-- Counter (screen-reader-visible, visually shown) -->
+    <p id="lb-counter" class="mb-3 text-sm font-medium text-white/60" aria-live="polite" aria-atomic="true"></p>
+
+    <!-- Close button -->
+    <button
+      id="lb-close"
+      type="button"
+      class="absolute right-4 top-4 z-10 flex h-10 w-10 items-center justify-center rounded-full bg-white/10 text-white backdrop-blur-sm transition hover:bg-white/25 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
+      aria-label={t('gallery.fullscreen_close')}
+    >
+      <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+      </svg>
+    </button>
+
+    <!-- Main image -->
+    <div class="relative flex max-h-[80vh] max-w-[90vw] items-center justify-center">
+      <img
+        id="lb-img"
+        src=""
+        alt=""
+        class="max-h-[80vh] max-w-[90vw] rounded-lg object-contain shadow-2xl"
+        width="1200"
+        height="900"
+      />
+      <!-- RF-06: brand watermark on lightbox image -->
+      <span
+        class="absolute bottom-3 right-3 rounded bg-black/40 px-2 py-0.5 text-xs font-bold text-white/80 backdrop-blur-sm no-select"
+        aria-hidden="true"
+      >✦ DI Sole</span>
+    </div>
+
+    <!-- Alt text caption -->
+    <p id="lb-caption" class="mt-3 max-w-lg text-center text-sm text-white/70"></p>
+
+    <!-- Previous / Next navigation -->
+    <div class="mt-4 flex items-center gap-4">
+      <button
+        id="lb-prev"
+        type="button"
+        class="flex h-10 w-10 items-center justify-center rounded-full bg-white/10 text-white backdrop-blur-sm transition hover:bg-white/25 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
+        aria-label={t('gallery.prev')}
+      >
+        <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+        </svg>
+      </button>
+      <button
+        id="lb-next"
+        type="button"
+        class="flex h-10 w-10 items-center justify-center rounded-full bg-white/10 text-white backdrop-blur-sm transition hover:bg-white/25 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
+        aria-label={t('gallery.next')}
+      >
+        <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+        </svg>
+      </button>
+    </div>
+  </div>
+</dialog>
+
+<script define:vars={{ imageOf: t('gallery.image_of') }}>
+  // Gallery: category filter + accessible lightbox
+  // PI-02: contextmenu prevention on gallery images
+  const dialog   = document.getElementById('gallery-lightbox');
+  const lbImg    = document.getElementById('lb-img');
+  const lbCaption= document.getElementById('lb-caption');
+  const lbCounter= document.getElementById('lb-counter');
+  const lbClose  = document.getElementById('lb-close');
+  const lbPrev   = document.getElementById('lb-prev');
+  const lbNext   = document.getElementById('lb-next');
+
+  // Build ordered list of VISIBLE gallery items
+  let visibleItems = [];
+  let currentIndex = 0;
+
+  function buildVisibleList() {
+    visibleItems = Array.from(
+      document.querySelectorAll('.gallery-item:not([hidden]) [data-lightbox-index]')
+    );
+  }
+
+  function showImage(idx) {
+    const btn  = visibleItems[idx];
+    if (!btn) return;
+    const img  = btn.querySelector('img');
+    if (!lbImg || !img) return;
+    lbImg.src     = img.src;
+    lbImg.alt     = img.alt;
+    if (lbCaption) lbCaption.textContent = img.alt;
+    if (lbCounter) lbCounter.textContent = `${idx + 1} ${imageOf} ${visibleItems.length}`;
+    currentIndex = idx;
+  }
+
+  function openLightbox(idx) {
+    buildVisibleList();
+    showImage(idx);
+    dialog?.showModal();
+    lbClose?.focus();
+  }
+
+  function closeLightbox() {
+    dialog?.close();
+  }
+
+  function prev() {
+    const idx = (currentIndex - 1 + visibleItems.length) % visibleItems.length;
+    showImage(idx);
+  }
+
+  function next() {
+    const idx = (currentIndex + 1) % visibleItems.length;
+    showImage(idx);
+  }
+
+  // Open lightbox on thumbnail click
+  document.querySelectorAll('[data-lightbox-index]').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      buildVisibleList();
+      const rawIdx = parseInt(btn.getAttribute('data-lightbox-index') || '0', 10);
+      const visibleIdx = visibleItems.indexOf(btn);
+      openLightbox(visibleIdx >= 0 ? visibleIdx : rawIdx);
+    });
+  });
+
+  lbClose?.addEventListener('click', closeLightbox);
+  lbPrev?.addEventListener('click', prev);
+  lbNext?.addEventListener('click', next);
+
+  // Close on backdrop click
+  dialog?.addEventListener('click', (e) => {
+    if (e.target === dialog) closeLightbox();
+  });
+
+  // Keyboard navigation (Esc handled natively by <dialog>)
+  dialog?.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowLeft')  { e.preventDefault(); prev(); }
+    if (e.key === 'ArrowRight') { e.preventDefault(); next(); }
+  });
+
+  // Focus trap: keep Tab inside the dialog controls
+  dialog?.addEventListener('keydown', (e) => {
+    if (e.key !== 'Tab') return;
+    const focusable = Array.from(
+      dialog.querySelectorAll('button:not([disabled])')
+    );
+    if (!focusable.length) return;
+    const first = focusable[0];
+    const last  = focusable[focusable.length - 1];
+    if (e.shiftKey && document.activeElement === first) {
+      e.preventDefault();
+      (last).focus();
+    } else if (!e.shiftKey && document.activeElement === last) {
+      e.preventDefault();
+      (first).focus();
+    }
+  });
+
+  // PI-02: right-click context menu disabled on gallery + lightbox images
+  document.querySelectorAll('#galeria img, #lb-img').forEach((img) => {
+    img.addEventListener('contextmenu', (e) => e.preventDefault());
+  });
+
+  // ── Category filter ──────────────────────────────────────────────────────
+  const filterBtns = document.querySelectorAll('.gallery-filter');
+
+  filterBtns.forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const filter = btn.getAttribute('data-filter');
+
+      filterBtns.forEach((b) => {
+        b.setAttribute('aria-pressed', 'false');
+        b.removeAttribute('data-active');
+      });
+      btn.setAttribute('aria-pressed', 'true');
+      btn.setAttribute('data-active', '');
+
+      document.querySelectorAll('.gallery-item').forEach((item) => {
+        const cat = item.getAttribute('data-category');
+        if (filter === 'all' || cat === filter) {
+          item.removeAttribute('hidden');
+          item.style.display = '';
+        } else {
+          item.setAttribute('hidden', '');
+          item.style.display = 'none';
+        }
+      });
+    });
+  });
+
+  // Activate "All" filter on load
+  const allBtn = document.querySelector('[data-filter="all"]');
+  allBtn?.setAttribute('data-active', '');
+</script>

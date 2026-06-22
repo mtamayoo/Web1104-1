@@ -1,0 +1,111 @@
+---
+/**
+ * SantaFe.astro — Destination section: Santa Fe de Antioquia.
+ * RF-08: distances placeholder.
+ * Section 3: "Reforzar atractivo turístico". IA-07.
+ * CT-18: slogan "Un oasis familiar en el corazón de Antioquia".
+ */
+import { useTranslations } from '../i18n/utils';
+import type { Locale } from '../i18n/utils';
+
+export interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const t = useTranslations(locale);
+
+// Family activity highlights
+const highlights = [
+  {
+    icon: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="h-5 w-5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 21a9.004 9.004 0 008.716-6.747M12 21a9.004 9.004 0 01-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9S9.515 3 12 3m0 0a8.997 8.997 0 017.843 4.582M12 3a8.997 8.997 0 00-7.843 4.582m15.686 0A11.953 11.953 0 0112 10.5c-2.998 0-5.74-1.1-7.843-2.918m15.686 0A8.959 8.959 0 0121 12c0 .778-.099 1.533-.284 2.253m0 0A17.919 17.919 0 0112 16.5c-3.162 0-6.133-.815-8.716-2.247m0 0A9.015 9.015 0 013 12c0-1.605.42-3.113 1.157-4.418" /></svg>`,
+    label: { es: 'Centro histórico colonial', en: 'Colonial historic centre', fr: 'Centre historique colonial' },
+  },
+  {
+    icon: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="h-5 w-5"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12l8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25" /></svg>`,
+    label: { es: 'Iglesias centenarias', en: 'Centuries-old churches', fr: 'Églises centenaires' },
+  },
+  {
+    icon: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="h-5 w-5"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 3.75v4.5m0-4.5h4.5m-4.5 0L9 9M3.75 20.25v-4.5m0 4.5h4.5m-4.5 0L9 15M20.25 3.75h-4.5m4.5 0v4.5m0-4.5L15 9m5.25 11.25h-4.5m4.5 0v-4.5m0 4.5L15 15" /></svg>`,
+    label: { es: 'Paseos en bote por el río Cauca', en: 'Boat trips on the Cauca River', fr: 'Sorties en bateau sur le río Cauca' },
+  },
+  {
+    icon: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="h-5 w-5"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 10.5l4.72-4.72a.75.75 0 011.28.53v11.38a.75.75 0 01-1.28.53l-4.72-4.72M4.5 18.75h9a2.25 2.25 0 002.25-2.25v-9a2.25 2.25 0 00-2.25-2.25h-9A2.25 2.25 0 002.25 7.5v9a2.25 2.25 0 002.25 2.25z" /></svg>`,
+    label: { es: 'Clima cálido todo el año', en: 'Warm climate year-round', fr: 'Climat chaud toute l\'année' },
+  },
+  {
+    icon: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="h-5 w-5"><path stroke-linecap="round" stroke-linejoin="round" d="M15.362 5.214A8.252 8.252 0 0112 21 8.25 8.25 0 016.038 7.048 8.287 8.287 0 009 9.6a8.983 8.983 0 013.361-6.867 8.21 8.21 0 003 2.48z" /></svg>`,
+    label: { es: 'Gastronomía local', en: 'Local gastronomy', fr: 'Gastronomie locale' },
+  },
+  {
+    icon: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="h-5 w-5"><path stroke-linecap="round" stroke-linejoin="round" d="M9.53 16.122a3 3 0 00-5.78 1.128 2.25 2.25 0 01-2.4 2.245 4.5 4.5 0 008.4-2.245c0-.399-.078-.78-.22-1.128zm0 0a15.998 15.998 0 003.388-1.62m-5.043-.025a15.994 15.994 0 011.622-3.395m3.42 3.42a15.995 15.995 0 004.764-4.648l3.876-5.814a1.151 1.151 0 00-1.597-1.597L14.146 6.32a15.996 15.996 0 00-4.649 4.763m3.42 3.42a6.776 6.776 0 00-3.42-3.42" /></svg>`,
+    label: { es: 'Aventura y naturaleza', en: 'Adventure and nature', fr: 'Aventure et nature' },
+  },
+] as const;
+
+const currentLabels = highlights.map((h) => h.label[locale as keyof typeof highlights[0]['label']] || h.label['es']);
+---
+
+<section
+  id="santa-fe"
+  aria-labelledby="santafe-heading"
+  class="bg-surface px-4 py-20"
+>
+  <div class="mx-auto max-w-7xl">
+    <div class="flex items-center gap-3">
+      <span class="h-1 w-12 rounded-full bg-primary" aria-hidden="true"></span>
+      <h2
+        id="santafe-heading"
+        class="font-heading text-3xl font-bold text-neutral md:text-4xl"
+      >
+        {t('santafe.heading')}
+      </h2>
+    </div>
+    <p class="mt-3 text-xl font-medium text-primary">{t('santafe.subtitle')}</p>
+
+    <div class="mt-8 grid gap-10 lg:grid-cols-2 lg:gap-16">
+      <!-- Description text -->
+      <div class="space-y-5">
+        <p class="text-lg leading-relaxed text-neutral/80">{t('santafe.description')}</p>
+
+        <h3 class="mt-8 font-heading text-xl font-bold text-neutral">
+          {t('santafe.activities_heading')}
+        </h3>
+        <p class="text-lg leading-relaxed text-neutral/80">{t('santafe.activities')}</p>
+      </div>
+
+      <!-- Activity highlights grid -->
+      <ul class="grid grid-cols-2 gap-4 self-start" role="list">
+        {highlights.map(({ icon }, i) => (
+          <li class="flex items-center gap-3 rounded-xl border border-neutral/10 bg-white p-4 shadow-sm">
+            <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary" aria-hidden="true" set:html={icon} />
+            <span class="text-sm font-medium leading-tight text-neutral">{currentLabels[i]}</span>
+          </li>
+        ))}
+      </ul>
+    </div>
+
+    <!-- RF-08: Distances to nearby points of interest (section 12 — pending from owner) -->
+    <!-- STRUCTURE: fill distance entries when owner delivers them -->
+    <div class="mt-14 rounded-xl border border-dashed border-primary/30 bg-primary/5 p-6">
+      <h3 class="font-heading text-lg font-bold text-neutral">
+        {t('santafe.distances_heading')}
+      </h3>
+      <p class="mt-1 text-sm italic text-neutral/50">
+        {t('santafe.distances_note')}
+      </p>
+      <!-- TODO (owner): insert distance table here when data is delivered.
+           Suggested format:
+           <table class="mt-4 w-full text-sm">
+             <tr><td>Parque Principal</td><td>X km</td></tr>
+             ...
+           </table>
+      -->
+    </div>
+
+    <!-- Tagline (CT-17) -->
+    <p class="mt-10 text-right font-heading text-xl font-bold italic text-primary no-select">
+      {t('santafe.tagline')}
+    </p>
+  </div>
+</section>
