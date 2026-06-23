@@ -88,20 +88,20 @@ const slides = [
     </p>
 
     <!-- CTAs — RF-04: equal-height/equal-width 3-up grid; label shown once above -->
-    <p class="mt-10 text-sm font-semibold uppercase tracking-widest text-white/60 no-select">
+    <p class="mt-6 text-sm font-semibold uppercase tracking-widest text-white/60 no-select sm:mt-10">
       {t('hero.book_on_label')}
     </p>
-    <div class="mt-3 grid w-full grid-cols-1 gap-3 sm:grid-cols-3">
+    <div class="mt-3 grid w-full grid-cols-1 gap-2 sm:grid-cols-3 sm:gap-3">
       <!-- Booking.com -->
       <a
         href={BOOKING_URL}
         target="_blank"
         rel="noopener noreferrer"
-        class="flex h-14 w-full items-center justify-center gap-2 whitespace-nowrap rounded-full bg-primary px-6 text-base font-bold text-neutral shadow-2xl ring-2 ring-primary/35 transition hover:bg-primary-dark hover:scale-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
+        class="flex h-12 w-full items-center justify-center gap-2 whitespace-nowrap rounded-full bg-primary px-4 text-sm font-bold text-neutral shadow-2xl ring-2 ring-primary/35 transition hover:bg-primary-dark hover:scale-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white sm:h-14 sm:px-6 sm:text-base"
         aria-label={t('hero.cta_booking_aria')}
       >
         <!-- Calendar mark — Booking.com -->
-        <svg class="h-5 w-5 shrink-0" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+        <svg class="h-4 w-4 shrink-0 sm:h-5 sm:w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
           <path fill-rule="evenodd" d="M6 2a1 1 0 0 0-1 1v1H4a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2h-1V3a1 1 0 1 0-2 0v1H7V3a1 1 0 0 0-1-1zm0 5a1 1 0 0 0 0 2h8a1 1 0 1 0 0-2H6z" clip-rule="evenodd"/>
         </svg>
         {t('hero.cta_booking')}
@@ -112,11 +112,11 @@ const slides = [
         href={AIRBNB_URL}
         target="_blank"
         rel="noopener noreferrer"
-        class="flex h-14 w-full items-center justify-center gap-2 whitespace-nowrap rounded-full bg-primary px-6 text-base font-bold text-neutral shadow-2xl ring-2 ring-primary/35 transition hover:bg-primary-dark hover:scale-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
+        class="flex h-12 w-full items-center justify-center gap-2 whitespace-nowrap rounded-full bg-primary px-4 text-sm font-bold text-neutral shadow-2xl ring-2 ring-primary/35 transition hover:bg-primary-dark hover:scale-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white sm:h-14 sm:px-6 sm:text-base"
         aria-label={t('hero.cta_airbnb_aria')}
       >
         <!-- Person mark — Airbnb -->
-        <svg class="h-5 w-5 shrink-0" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+        <svg class="h-4 w-4 shrink-0 sm:h-5 sm:w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
           <path fill-rule="evenodd" d="M10 9a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm-7 9a7 7 0 1 1 14 0H3z" clip-rule="evenodd"/>
         </svg>
         {t('hero.cta_airbnb')}
@@ -127,11 +127,11 @@ const slides = [
         href={VRBO_URL}
         target="_blank"
         rel="noopener noreferrer"
-        class="flex h-14 w-full items-center justify-center gap-2 whitespace-nowrap rounded-full bg-primary px-6 text-base font-bold text-neutral shadow-2xl ring-2 ring-primary/35 transition hover:bg-primary-dark hover:scale-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
+        class="flex h-12 w-full items-center justify-center gap-2 whitespace-nowrap rounded-full bg-primary px-4 text-sm font-bold text-neutral shadow-2xl ring-2 ring-primary/35 transition hover:bg-primary-dark hover:scale-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white sm:h-14 sm:px-6 sm:text-base"
         aria-label={t('hero.cta_vrbo_aria')}
       >
         <!-- House mark — Vrbo -->
-        <svg class="h-5 w-5 shrink-0" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+        <svg class="h-4 w-4 shrink-0 sm:h-5 sm:w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
           <path d="M10.707 2.293a1 1 0 0 0-1.414 0l-7 7a1 1 0 0 0 1.414 1.414L4 10.414V17a1 1 0 0 0 1 1h2a1 1 0 0 0 1-1v-2a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v2a1 1 0 0 0 1 1h2a1 1 0 0 0 1-1v-6.586l.293.293a1 1 0 0 0 1.414-1.414l-7-7z"/>
         </svg>
         {t('hero.cta_vrbo')}
