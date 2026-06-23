@@ -1,8 +1,8 @@
 {
   "meta": {
-    "title": "Apartasol 1104 Citadela DI Sole – Santa Fe de Antioquia",
+    "title": "Apartasol 1104 Citadela Di Sole – Santa Fe de Antioquia",
     "description": "Apartamento turístico premium para hasta 8 huéspedes en Santa Fe de Antioquia. Piscinas, toboganes, vistas a montaña y ambiente familiar. Reserva en Booking o Airbnb.",
-    "og_title": "Apartasol 1104 Citadela DI Sole",
+    "og_title": "Apartasol 1104 Citadela Di Sole",
     "og_description": "La escapada perfecta en Santa Fe de Antioquia. Hasta 8 huéspedes, piscinas, toboganes y vistas a montaña."
   },
   "nav": {
@@ -20,14 +20,19 @@
   "hero": {
     "slogan": "Te va a encantar",
     "subtitle": "La escapada perfecta en Santa Fe de Antioquia",
-    "cta_booking": "Reservar en Booking",
-    "cta_airbnb": "Ver en Airbnb"
+    "book_on_label": "Reserva en",
+    "cta_booking": "Booking.com",
+    "cta_airbnb": "Airbnb",
+    "cta_booking_aria": "Reservar en Booking.com (se abre en una pestaña nueva)",
+    "cta_airbnb_aria": "Reservar en Airbnb (se abre en una pestaña nueva)",
+    "cta_vrbo": "Vrbo",
+    "cta_vrbo_aria": "Reservar en Vrbo (se abre en una pestaña nueva)"
   },
   "apartment": {
     "heading": "El Apartamento",
-    "description_1": "Descubre Apartasol 1104 DI Sole, un apartamento turístico diseñado para unas vacaciones inolvidables en Santa Fe de Antioquia. Ubicado en uno de los complejos vacacionales más completos de la zona, combina tranquilidad, comodidad y entretenimiento para toda la familia.",
-    "description_2": "Con capacidad para hasta 8 huéspedes, el apartamento cuenta con dos habitaciones con aire acondicionado, tres baños, cocina equipada, lavadora, balcón y zonas sociales cómodas. Desde el apartamento se disfrutan vistas a las piscinas y a las montañas, en un entorno ideal para descansar y compartir.",
-    "description_3": "DI Sole destaca por sus piscinas, toboganes acuáticos, gimnasio, canchas deportivas, parque infantil, zonas comunes, seguridad 24 horas y ambiente familiar. Es una excelente base para disfrutar el encanto colonial de Santa Fe de Antioquia con la comodidad de una experiencia vacacional premium.",
+    "description_1": "Descubre Apartasol 1104 Di Sole, un apartamento de lujo en el piso 11 de Citadela Di Sole, con 76 m² de acabados de lujo y vistas panorámicas al valle del río Tonusco y al centro histórico de Santa Fe de Antioquia. Se alquila completo y de forma privada para tu grupo, combinando la comodidad de un hogar con las ventajas de un complejo vacacional de primer nivel.",
+    "description_2": "Con capacidad para hasta 8 huéspedes (6 adultos + 2 niños), cuenta con dos habitaciones con aire acondicionado, tres baños, cocina totalmente equipada (nevera, cafetera, microondas, estufa y utensilios de cocina), lavadora, amplio balcón y generosas zonas sociales. Ropa de cama y toallas incluidas; Wi-Fi de 20 Mbps, televisor Smart TV con streaming y acceso accesible al apartamento por ascensor.",
+    "description_3": "Citadela Di Sole ofrece piscinas con vistas, toboganes acuáticos, solarium, golfito, canchas deportivas, parque infantil, jardines, seguridad 24 h con vigilancia CCTV y parqueadero privado gratuito. Una base ideal para escapadas cortas o estancias más largas, a solo 4 cuadras del encanto colonial de Santa Fe de Antioquia.",
     "capacity": "Hasta 8 huéspedes",
     "bedrooms": "2 habitaciones con A/C",
     "bathrooms": "3 baños",
@@ -36,21 +41,33 @@
     "washer": "Lavadora",
     "balcony": "Balcón con vistas",
     "elevator": "Ascensor",
-    "no_hot_water": "Agua fría (no hay agua caliente)",
+    "wifi": "Wi-Fi 20 Mbps",
+    "smart_tv": "Smart TV · Streaming",
+    "floor_area": "76 m² · Piso 11",
+    "accessible": "Apartamento accesible",
     "rules": "No fiestas · No mascotas · No fumar",
-    "rules_heading": "Normas de la casa"
+    "rules_quiet_hours": "Horario de silencio de 00:00 a 09:00",
+    "rules_minors": "Menores de 18 años solo acompañados de un padre, madre o tutor legal",
+    "rules_heading": "Normas de la casa",
+    "highlights_heading": "Ambientes destacados",
+    "highlight_living": "Salón",
+    "highlight_bedroom": "Habitación",
+    "highlight_kitchen": "Cocina",
+    "highlight_balcony": "Balcón"
   },
   "amenities": {
     "heading": "Amenidades",
-    "subtitle": "Descanso, comodidad y diversión en familia",
+    "subtitle": "Descanso, comodidad y diversión en familia — todo dentro del complejo",
     "pools": "Piscinas",
     "slides": "Toboganes acuáticos",
-    "gym": "Gimnasio",
-    "sports": "Canchas deportivas",
+    "microfutbol": "Cancha de microfútbol",
+    "volleyball": "Cancha de vóley playa",
     "playground": "Parque infantil",
     "security": "Seguridad 24 horas",
-    "parking": "Parqueadero",
-    "common_areas": "Zonas comunes"
+    "accessible_parking": "Parqueadero accesible",
+    "common_areas": "Zonas comunes",
+    "minigolf": "Minigolf",
+    "solarium": "Solarium"
   },
   "santafe": {
     "heading": "Santa Fe de Antioquia",
@@ -58,13 +75,12 @@
     "description": "Santa Fe de Antioquia es un municipio de gran valor histórico y cultural en Colombia, declarado monumento nacional. Su arquitectura colonial, calles empedradas, iglesias centenarias y clima cálido lo convierten en el destino perfecto para descansar, explorar y disfrutar en familia.",
     "activities_heading": "Actividades para toda la familia",
     "activities": "Desde paseos por el centro histórico y visitas a la catedral hasta paseos en bote por el río Cauca y aventuras al aire libre, Santa Fe de Antioquia ofrece una experiencia inolvidable para todas las edades.",
-    "tagline": "Vive la experiencia DI Sole",
-    "distances_heading": "Distancias a puntos de interés",
-    "distances_note": "Distancias desde Citadela DI Sole a los principales puntos de interés — detalles próximamente."
+    "tagline": "Vive la experiencia Di Sole",
+    "visit_heading": "Qué visitar cerca"
   },
   "gallery": {
     "heading": "Galería",
-    "subtitle": "Vive la experiencia DI Sole",
+    "subtitle": "Vive la experiencia Di Sole",
     "cat_all": "Todas",
     "cat_apartment": "El Apartamento",
     "cat_pools": "Piscinas y Amenidades",
@@ -74,17 +90,56 @@
     "fullscreen_close": "Cerrar",
     "prev": "Imagen anterior",
     "next": "Imagen siguiente",
-    "image_of": "de"
+    "image_of": "de",
+    "alt": {
+      "salon_dia": "Salón iluminado del Apartasol 1104 Di Sole durante el día",
+      "salon_cocina": "Sala y cocina integrada del apartamento",
+      "cocina_salon": "Cocina equipada abierta hacia el salón",
+      "habitacion": "Habitación principal con aire acondicionado y espacio de descanso",
+      "bano_principal": "Baño moderno del apartamento",
+      "piscina_tobogan": "Piscina con tobogán y solarium en Citadela Di Sole",
+      "piscina_principal": "Piscina principal del complejo vacacional",
+      "piscina_solarium": "Piscina, tobogán y zona de solarium",
+      "tobogan_etapa": "Tobogán acuático de la zona de piscinas",
+      "espejo_agua": "Espejo de agua en las zonas comunes",
+      "balcon": "Balcón del apartamento con vista abierta",
+      "vista_pueblo": "Vista panorámica hacia Santa Fe de Antioquia y las montañas",
+      "balcon_dos": "Vista desde el balcón hacia las piscinas",
+      "golfito_canchas": "Golfito y canchas deportivas del conjunto",
+      "cancha_micro": "Cancha de microfútbol del complejo",
+      "juegos_ninos": "Parque infantil para familias",
+      "porteria": "Portería y acceso principal de Citadela Di Sole",
+      "piscina_sombrillas": "Piscina con sombrillas y asoleadoras en Citadela Di Sole",
+      "piscina_aerea": "Vista aérea de la zona de piscinas del complejo",
+      "piscina_ninos": "Piscina infantil con juego de agua tipo hongo",
+      "piscina_vista": "Piscina del complejo con vista a las montañas",
+      "vista_pueblo_aerea": "Vista aérea hacia Santa Fe de Antioquia y el paisaje cercano",
+      "vista_aerea": "Paisaje aéreo de Santa Fe de Antioquia desde el complejo",
+      "minigolf": "Campo de minigolf en las zonas comunes de Citadela Di Sole",
+      "cancha_futbol": "Cancha de fútbol del complejo vacacional",
+      "cancha_arena": "Cancha de arena en las zonas comunes",
+      "parque_infantil": "Parque infantil en las zonas comunes de Citadela Di Sole",
+      "complejo_torres": "Torres y jardines de Citadela Di Sole"
+    },
+    "cat_complex": "Zonas comunes"
   },
   "location": {
     "heading": "Ubicación",
     "subtitle": "Cómo llegar",
-    "address": "Citadela DI Sole, Santa Fe de Antioquia, Antioquia, Colombia",
+    "address": "Citadela Di Sole, Santa Fe de Antioquia, Antioquia, Colombia",
     "open_maps": "Abrir en Google Maps",
     "coordinates": "Coordenadas: 6.5576942, -75.8321498",
-    "distances_pending": "Distancias a puntos de interés próximamente.",
+    "distances_heading": "Distancias clave",
+    "dist_1": "Plaza Mayor — a 4 cuadras a pie",
+    "dist_2": "Parque Acuático Kanaloa — 3,4 km",
+    "dist_3": "Aeropuerto Olaya Herrera (Medellín) — ~55 km",
+    "dist_4": "Aeropuerto Internacional J. M. Córdova — ~78 km",
+    "dining_heading": "Restaurantes cerca",
+    "dining_1": "Cafetería La Chinca — 250 m",
+    "dining_2": "Restaurante Nueva España — 300 m",
+    "dining_3": "Restaurante Sabor Español — 300 m",
     "how_to_arrive": "Cómo llegar",
-    "how_to_arrive_text": "Santa Fe de Antioquia está a unos 80 km al noroeste de Medellín por la Vía 62. En carro el trayecto toma aproximadamente 1,5 horas. Citadela DI Sole se encuentra en las afueras del municipio; el punto exacto aparece marcado en el mapa."
+    "how_to_arrive_text": "Santa Fe de Antioquia está a unos 80 km al noroeste de Medellín por la Vía 62. En carro el trayecto toma aproximadamente 1,5 horas. Citadela Di Sole se encuentra en las afueras del municipio; el punto exacto aparece marcado en el mapa."
   },
   "materials": {
     "heading": "Materiales de Referencia",
@@ -103,19 +158,26 @@
   "booking": {
     "heading": "Reservar",
     "subtitle": "Hasta 8 huéspedes, infinitos recuerdos",
-    "cta_booking_primary": "Reservar en Booking",
-    "cta_airbnb_secondary": "Ver en Airbnb",
-    "booking_label": "Canal principal de reservas",
-    "airbnb_label": "Canal secundario de reservas",
-    "tagline": "Descanso, comodidad y diversión en familia"
+    "book_on_label": "Reserva en",
+    "cta_booking_primary": "Booking.com",
+    "cta_airbnb_secondary": "Airbnb",
+    "tagline": "Descanso, comodidad y diversión en familia",
+    "cta_booking_primary_aria": "Reservar en Booking.com (se abre en una pestaña nueva)",
+    "cta_airbnb_secondary_aria": "Reservar en Airbnb (se abre en una pestaña nueva)",
+    "cta_vrbo": "Vrbo",
+    "cta_vrbo_aria": "Reservar en Vrbo (se abre en una pestaña nueva)"
   },
   "footer": {
-    "copyright": "© 2026 Apartasol 1104 Citadela DI Sole. Todos los derechos reservados.",
-    "copyright_extended": "© 2026 Apartasol 1104 Citadela DI Sole - Santa Fe de Antioquia. Todos los derechos reservados. Prohibida la reproducción, distribución o reutilización de contenidos, fotografías y materiales del sitio sin autorización expresa.",
+    "copyright": "© 2026 Apartasol 1104 Citadela Di Sole. Todos los derechos reservados.",
+    "copyright_extended": "© 2026 Apartasol 1104 Citadela Di Sole - Santa Fe de Antioquia · RNT 179772. Todos los derechos reservados. Prohibida la reproducción, distribución o reutilización de contenidos, fotografías y materiales del sitio sin autorización expresa.",
     "privacy_policy": "Política de Privacidad",
     "legal_notice": "Aviso Legal",
     "privacy_text": "Este sitio web no recopila ni almacena datos personales de los visitantes. Cuando está activado, este sitio utiliza Cloudflare Web Analytics, un servicio de analítica respetuoso con la privacidad que no usa cookies ni recopila datos personales. El sitio no tiene formularios de contacto, registro de usuarios ni sistemas de pago propios. Tu privacidad está completamente protegida.",
-    "legal_text": "Todo el contenido de este sitio —textos, fotografías, gráficos y diseño— es propiedad de Apartasol 1104 Citadela DI Sole. Queda prohibida su reproducción, distribución, transformación o comunicación pública sin autorización expresa y escrita del titular."
+    "legal_text": "Todo el contenido de este sitio —textos, fotografías, gráficos y diseño— es propiedad de Apartasol 1104 Citadela Di Sole. Queda prohibida su reproducción, distribución, transformación o comunicación pública sin autorización expresa y escrita del titular.",
+    "credentials_heading": "Credenciales y registros",
+    "logo_alt": "Logo de Citadela Di Sole",
+    "booking_award_alt": "Premio Booking Traveller Review Awards 2024 de Di Sole",
+    "rnt_alt": "Registro Nacional de Turismo RNT 179772"
   },
   "lang": {
     "es": "Español",

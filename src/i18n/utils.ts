@@ -1,6 +1,6 @@
 /**
  * src/i18n/utils.ts
- * Translation helpers for Apartasol 1104 DI Sole.
+ * Translation helpers for Apartasol 1104 Di Sole.
  * Usage:
  *   import { useTranslations, getLangAttr } from '../i18n/utils';
  *   const t = useTranslations('es');

@@ -3,67 +3,69 @@
  * Gallery.astro — Photo gallery with category filter and accessible fullscreen lightbox.
  * RF-05: fullscreen photo viewing on mobile and desktop.
  * RF-06: brand overlay on photos (PI-02: right-click/drag disabled on images).
- * PI-01: web-optimised placeholder images; real photos drop in as WebP to public/galeria/.
+ * PI-01: web-optimised, EXIF-stripped real WebP photos served from public/galeria/.
  * WCAG: keyboard navigation (Esc, arrows), focus trap inside dialog, aria-modal.
  */
 import { useTranslations } from '../i18n/utils';
 import type { Locale } from '../i18n/utils';
+import { BASE_PATH } from '../config/site';
 
 export interface Props {
   locale: Locale;
 }
 
+type Category = 'all' | 'apartment' | 'pools' | 'views' | 'complex' | 'surroundings';
+
 const { locale } = Astro.props;
 const t = useTranslations(locale);
+const base = BASE_PATH.replace(/\/$/, '');
+const galleryAsset = (name: string, width: number) => `${base}/galeria/${name}-${width}.webp`;
 
-// Gallery items — replace src with real WebP images when photos are delivered.
-// Keep the category field and alt text structure; it drives filter + lightbox.
-//
-// OWNER — RESPONSIVE IMAGE SETUP (NF-IMG-06):
-// When real photos arrive, use Astro <Picture> for AVIF+WebP+srcset:
-//
-//   import { Picture } from 'astro:assets';
-//   import foto01 from '../assets/galeria/foto-01.jpg';  ← put originals in src/assets/
-//
-//   <Picture
-//     src={foto01}
-//     formats={['avif', 'webp']}
-//     widths={[400, 800]}
-//     sizes="(min-width: 1280px) calc(25vw - 2rem), (min-width: 640px) calc(33vw - 1.5rem), calc(50vw - 1rem)"
-//     alt={localizedAlt[i]}
-//     width={400}
-//     height={300}
-//     loading="lazy"
-//     decoding="async"
-//     class="aspect-[4/3] w-full object-cover transition-transform duration-300 group-hover:scale-105"
-//   />
-//
-// SVG placeholder srcset lists the single source; replace with multi-width entries
-// (e.g. "foto-400.webp 400w, foto-800.webp 800w") when raster photos are ready.
-const galleryItems = [
-  { src: '/galeria/placeholder-01.svg', alt: { es: 'Vista del apartamento — foto pendiente', en: 'Apartment view — photo pending', fr: 'Vue de l\'appartement — photo à venir' }, category: 'apartment' },
-  { src: '/galeria/placeholder-02.svg', alt: { es: 'Piscinas del complejo — foto pendiente', en: 'Complex pools — photo pending', fr: 'Piscines du complexe — photo à venir' }, category: 'pools' },
-  { src: '/galeria/placeholder-01.svg', alt: { es: 'Sala de estar — foto pendiente', en: 'Living room — photo pending', fr: 'Salon — photo à venir' }, category: 'apartment' },
-  { src: '/galeria/placeholder-02.svg', alt: { es: 'Toboganes — foto pendiente', en: 'Water slides — photo pending', fr: 'Toboggans — photo à venir' }, category: 'pools' },
-  { src: '/galeria/placeholder-01.svg', alt: { es: 'Vista a la montaña — foto pendiente', en: 'Mountain view — photo pending', fr: 'Vue sur la montagne — photo à venir' }, category: 'views' },
-  { src: '/galeria/placeholder-02.svg', alt: { es: 'Santa Fe de Antioquia — foto pendiente', en: 'Santa Fe de Antioquia — photo pending', fr: 'Santa Fe de Antioquia — photo à venir' }, category: 'surroundings' },
-  { src: '/galeria/placeholder-01.svg', alt: { es: 'Cocina equipada — foto pendiente', en: 'Equipped kitchen — photo pending', fr: 'Cuisine équipée — photo à venir' }, category: 'apartment' },
-  { src: '/galeria/placeholder-02.svg', alt: { es: 'Vista a la piscina desde el balcón — foto pendiente', en: 'Pool view from balcony — photo pending', fr: 'Vue sur la piscine depuis le balcon — photo à venir' }, category: 'views' },
-] as const;
-
-type Category = 'all' | 'apartment' | 'pools' | 'views' | 'surroundings';
-
-const categories: { key: string; id: Category }[] = [
-  { key: 'gallery.cat_all',         id: 'all'         },
-  { key: 'gallery.cat_apartment',   id: 'apartment'   },
-  { key: 'gallery.cat_pools',       id: 'pools'       },
-  { key: 'gallery.cat_views',       id: 'views'       },
-  { key: 'gallery.cat_surroundings',id: 'surroundings'},
+const galleryItems: { name: string; altKey: string; category: Exclude<Category, 'all'> }[] = [
+  { name: 'salon-dia', altKey: 'gallery.alt.salon_dia', category: 'apartment' },
+  { name: 'salon-cocina', altKey: 'gallery.alt.salon_cocina', category: 'apartment' },
+  { name: 'cocina-salon', altKey: 'gallery.alt.cocina_salon', category: 'apartment' },
+  { name: 'habitacion-otra-vista', altKey: 'gallery.alt.habitacion', category: 'apartment' },
+  { name: 'bano-principal', altKey: 'gallery.alt.bano_principal', category: 'apartment' },
+  { name: 'piscina-tobogan', altKey: 'gallery.alt.piscina_tobogan', category: 'pools' },
+  { name: 'piscina-principal', altKey: 'gallery.alt.piscina_principal', category: 'pools' },
+  { name: 'piscina-tobogan-solarium', altKey: 'gallery.alt.piscina_solarium', category: 'pools' },
+  { name: 'tobogan-etapa', altKey: 'gallery.alt.tobogan_etapa', category: 'pools' },
+  { name: 'espejo-agua', altKey: 'gallery.alt.espejo_agua', category: 'pools' },
+  { name: 'piscina-sombrillas', altKey: 'gallery.alt.piscina_sombrillas', category: 'pools' },
+  { name: 'piscina-aerea', altKey: 'gallery.alt.piscina_aerea', category: 'pools' },
+  { name: 'piscina-ninos', altKey: 'gallery.alt.piscina_ninos', category: 'pools' },
+  { name: 'piscina-vista', altKey: 'gallery.alt.piscina_vista', category: 'pools' },
+  { name: 'balcon', altKey: 'gallery.alt.balcon', category: 'views' },
+  { name: 'vista-pueblo', altKey: 'gallery.alt.vista_pueblo', category: 'views' },
+  { name: 'balcon-dos', altKey: 'gallery.alt.balcon_dos', category: 'views' },
+  { name: 'vista-pueblo-aerea', altKey: 'gallery.alt.vista_pueblo_aerea', category: 'views' },
+  { name: 'vista-aerea', altKey: 'gallery.alt.vista_aerea', category: 'views' },
+  { name: 'golfito-canchas', altKey: 'gallery.alt.golfito_canchas', category: 'complex' },
+  { name: 'cancha-micro', altKey: 'gallery.alt.cancha_micro', category: 'complex' },
+  { name: 'juegos-ninos', altKey: 'gallery.alt.juegos_ninos', category: 'complex' },
+  { name: 'porteria', altKey: 'gallery.alt.porteria', category: 'complex' },
+  { name: 'minigolf', altKey: 'gallery.alt.minigolf', category: 'complex' },
+  { name: 'cancha-futbol', altKey: 'gallery.alt.cancha_futbol', category: 'complex' },
+  { name: 'cancha-arena', altKey: 'gallery.alt.cancha_arena', category: 'complex' },
+  { name: 'parque-infantil', altKey: 'gallery.alt.parque_infantil', category: 'complex' },
+  { name: 'complejo-torres', altKey: 'gallery.alt.complejo_torres', category: 'complex' },
 ];
 
-const localizedAlt = galleryItems.map((item) =>
-  item.alt[locale as keyof typeof item.alt] ?? item.alt['es']
+const categories: { key: string; id: Category }[] = [
+  { key: 'gallery.cat_all',          id: 'all'          },
+  { key: 'gallery.cat_apartment',    id: 'apartment'    },
+  { key: 'gallery.cat_pools',        id: 'pools'        },
+  { key: 'gallery.cat_views',        id: 'views'        },
+  { key: 'gallery.cat_complex',      id: 'complex'      },
+  // Keep the Santa Fe category ready for future town photos, but hide it while empty.
+  { key: 'gallery.cat_surroundings', id: 'surroundings' },
+];
+
+const visibleCategories = categories.filter(({ id }) =>
+  id === 'all' || galleryItems.some((item) => item.category === id)
 );
+const localizedAlt = galleryItems.map((item) => t(item.altKey));
 ---
 
 <section
@@ -85,12 +87,12 @@ const localizedAlt = galleryItems.map((item) =>
 
     <!-- Category filter tabs -->
     <div role="group" aria-label={t('gallery.heading')} class="mt-8 flex flex-wrap gap-2">
-      {categories.map(({ key, id }) => (
+      {visibleCategories.map(({ key, id }) => (
         <button
           type="button"
           data-filter={id}
           aria-pressed={id === 'all' ? 'true' : 'false'}
-          class="gallery-filter rounded-full border border-neutral/20 px-4 py-2 text-sm font-medium transition-colors hover:bg-primary hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary data-[active]:bg-primary data-[active]:text-white data-[active]:border-primary"
+          class="gallery-filter rounded-full border border-neutral/20 px-4 py-2 text-sm font-medium transition-colors hover:bg-primary hover:text-neutral focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary data-[active]:bg-primary data-[active]:text-neutral data-[active]:border-primary"
         >
           {t(key)}
         </button>
@@ -104,17 +106,19 @@ const localizedAlt = galleryItems.map((item) =>
       aria-label={t('gallery.heading')}
       id="gallery-grid"
     >
-      {galleryItems.map(({ src, category }, i) => (
+      {galleryItems.map(({ name, category }, i) => (
         <li data-category={category} class="gallery-item">
           <button
             type="button"
             data-lightbox-index={i}
+            data-full={galleryAsset(name, 1600)}
             class="group relative w-full overflow-hidden rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
             aria-label={`${t('gallery.fullscreen_open')}: ${localizedAlt[i]}`}
           >
             <img
-              src={src}
-              srcset={`${src} 400w`}
+              src={galleryAsset(name, 400)}
+              srcset={`${galleryAsset(name, 400)} 400w, ${galleryAsset(name, 800)} 800w`}
+              data-full={galleryAsset(name, 1600)}
               sizes="(min-width: 1280px) calc(25vw - 2rem), (min-width: 640px) calc(33vw - 1.5rem), calc(50vw - 1rem)"
               alt={localizedAlt[i]}
               loading="lazy"
@@ -128,7 +132,7 @@ const localizedAlt = galleryItems.map((item) =>
               class="absolute inset-0 flex items-end justify-between bg-gradient-to-t from-neutral/60 to-transparent px-3 py-2 opacity-0 transition-opacity duration-200 group-hover:opacity-100 group-focus-visible:opacity-100"
               aria-hidden="true"
             >
-              <span class="text-xs font-bold text-white/90 no-select">✦ DI Sole</span>
+              <span class="text-xs font-bold text-white/90 no-select">✦ Di Sole</span>
               <svg class="h-5 w-5 text-white/80" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"/>
               </svg>
@@ -174,14 +178,14 @@ const localizedAlt = galleryItems.map((item) =>
         src=""
         alt=""
         class="max-h-[80vh] max-w-[90vw] rounded-lg object-contain shadow-2xl"
-        width="1200"
-        height="900"
+        width="1600"
+        height="1200"
       />
       <!-- RF-06: brand watermark on lightbox image -->
       <span
         class="absolute bottom-3 right-3 rounded bg-black/40 px-2 py-0.5 text-xs font-bold text-white/80 backdrop-blur-sm no-select"
         aria-hidden="true"
-      >✦ DI Sole</span>
+      >✦ Di Sole</span>
     </div>
 
     <!-- Alt text caption -->
@@ -239,7 +243,7 @@ const localizedAlt = galleryItems.map((item) =>
     if (!btn) return;
     const img  = btn.querySelector('img');
     if (!lbImg || !img) return;
-    lbImg.src     = img.src;
+    lbImg.src     = btn.dataset.full || img.dataset.full || img.currentSrc || img.src;
     lbImg.alt     = img.alt;
     if (lbCaption) lbCaption.textContent = img.alt;
     if (lbCounter) lbCounter.textContent = `${idx + 1} ${imageOf} ${visibleItems.length}`;

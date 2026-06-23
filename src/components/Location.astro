@@ -75,4 +75,39 @@ const MAPS_EMBED_URL =
     <h3 class="font-heading text-xl font-bold text-neutral">{t('location.how_to_arrive')}</h3>
     <p class="mt-3 max-w-2xl text-neutral/70">{t('location.how_to_arrive_text')}</p>
   </div>
+
+  <!-- Distances list -->
+  <div class="mt-10">
+    <h3 class="font-heading text-xl font-bold text-neutral">{t('location.distances_heading')}</h3>
+    <ul class="mt-4 space-y-2" role="list">
+      {[
+        t('location.dist_1'),
+        t('location.dist_2'),
+        t('location.dist_3'),
+        t('location.dist_4'),
+      ].map((item) => (
+        <li class="flex items-center gap-3 text-neutral/70">
+          <span class="h-1.5 w-1.5 shrink-0 rounded-full bg-secondary" aria-hidden="true"></span>
+          <span class="text-sm">{item}</span>
+        </li>
+      ))}
+    </ul>
+  </div>
+
+  <!-- Nearby dining -->
+  <div class="mt-8">
+    <h3 class="font-heading text-xl font-bold text-neutral">{t('location.dining_heading')}</h3>
+    <ul class="mt-4 space-y-2" role="list">
+      {[
+        t('location.dining_1'),
+        t('location.dining_2'),
+        t('location.dining_3'),
+      ].map((item) => (
+        <li class="flex items-center gap-3 text-neutral/70">
+          <span class="h-1.5 w-1.5 shrink-0 rounded-full bg-primary" aria-hidden="true"></span>
+          <span class="text-sm">{item}</span>
+        </li>
+      ))}
+    </ul>
+  </div>
 </section>

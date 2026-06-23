@@ -1,30 +1,25 @@
-# public/galeria/ — Gallery Images
+# public/galeria/ — Optimized Gallery Images
 
-This folder will hold the optimised (WebP / AVIF) gallery photographs once the
-owner delivers the final photo selection (section 12 of the spec).
+This folder contains optimized, web-sized WebP copies generated from the owner’s finalized photos. Originals remain outside the repository and must not be committed here.
 
-## Pending assets (section 12)
+## Processing
 
-- Apartment interior photos (living room, bedrooms, bathrooms, kitchen, balcony)
-- Pool and water-slide photos
-- Views (mountain, pool from balcony)
-- Complex amenities (gym, sports courts, playground)
-- Santa Fe de Antioquia surroundings
+Run from the project root:
 
-## File naming convention (PI-03: avoid descriptive filenames)
+```powershell
+node scripts\process-photos.mjs
+```
 
-Use short, non-descriptive names to minimise direct-link scraping, e.g.:
-  `g01.webp`, `g02.webp`, ... or hash-based names.
-Do NOT use names like `piscina-principal.jpg` that reveal content.
+The script uses Sharp, strips metadata by not calling `withMetadata()`, writes quality-80 WebP, resizes with `fit: 'inside'`, and avoids upscaling with `withoutEnlargement: true`.
 
-## Format requirements (section 6.5)
+## Current size sets
 
-- Primary format: WebP
-- Additional: AVIF when meaningful size savings are achieved
-- No originals in this folder — use optimised, web-sized copies only (PI-01)
-- Include width × height attributes in `<img>` tags for CLS prevention
+- Hero slides: 1024, 1600, 1920
+- Gallery thumbnails: 400, 800
+- Gallery lightbox: 1600
+- Apartment room highlights: 600, 1000
+- Footer credentials/logo: 160, 320
 
-## Placeholder files in this folder
+## Placeholder files
 
-The two SVG placeholders (`placeholder-01.svg`, `placeholder-02.svg`) are
-temporary scaffolding only. Delete them when real assets are added.
+The original SVG placeholders may remain as harmless scaffolding, but active components should reference the real WebP assets instead.

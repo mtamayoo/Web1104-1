@@ -7,7 +7,7 @@
  */
 import { useTranslations } from '../i18n/utils';
 import type { Locale } from '../i18n/utils';
-import { PROPERTY_NAME, BASE_PATH } from '../config/site';
+import { BASE_PATH } from '../config/site';
 
 export interface Props {
   locale: Locale;
@@ -17,6 +17,8 @@ const { locale } = Astro.props;
 const t = useTranslations(locale);
 
 const base = BASE_PATH.replace(/\/$/, '');
+const galleryAsset = (name: string, width: number) => `${base}/galeria/${name}-${width}.webp`;
+const logoAsset = (width: number) => `${base}/brand/logo-disole-lockup-${width}.webp`;
 
 const navLinks = [
   { key: 'nav.home',      href: '#hero'        },
@@ -25,7 +27,7 @@ const navLinks = [
   { key: 'nav.santafe',   href: '#santa-fe'    },
   { key: 'nav.gallery',   href: '#galeria'     },
   { key: 'nav.location',  href: '#ubicacion'   },
-  { key: 'nav.materials', href: '#materiales'  },
+  /* { key: 'nav.materials', href: '#materiales' }, */ // temporarily hidden — re-enable when PDFs are ready
   { key: 'nav.book',      href: '#reservar'    },
 ] as const;
 ---
@@ -39,10 +41,52 @@ const navLinks = [
     <div class="grid gap-10 md:grid-cols-3 lg:grid-cols-4">
       <!-- Brand -->
       <div class="lg:col-span-2">
-        <p class="font-heading text-2xl font-bold text-primary no-select">✦ DI Sole</p>
+        <div class="flex items-center gap-3">
+          <img
+            src={logoAsset(320)}
+            srcset={`${logoAsset(160)} 160w, ${logoAsset(320)} 320w, ${logoAsset(640)} 640w`}
+            sizes="112px"
+            alt={t('footer.logo_alt')}
+            width="320"
+            height="298"
+            loading="lazy"
+            decoding="async"
+            class="h-24 w-auto rounded-xl object-contain shadow-lg"
+          />
+          <p class="font-heading text-2xl font-bold text-primary no-select">Di Sole 1104</p>
+        </div>
         <p class="mt-2 text-sm text-white/50 max-w-xs">
-          Apartasol 1104 · Citadela DI Sole<br/>Santa Fe de Antioquia, Antioquia, Colombia
+          Apartasol 1104 · Citadela Di Sole<br/>Santa Fe de Antioquia, Antioquia, Colombia
         </p>
+        <div class="mt-5 flex flex-wrap items-center gap-3" aria-label={t('footer.credentials_heading')}>
+          <figure class="rounded-lg border border-white/10 bg-white/5 p-2">
+            <img
+              src={galleryAsset('booking-award-2024', 160)}
+              srcset={`${galleryAsset('booking-award-2024', 160)} 160w, ${galleryAsset('booking-award-2024', 320)} 320w`}
+              sizes="80px"
+              alt={t('footer.booking_award_alt')}
+              width="80"
+              height="56"
+              loading="lazy"
+              decoding="async"
+              class="h-14 w-auto rounded object-contain"
+            />
+          </figure>
+          <figure class="rounded-lg border border-white/10 bg-white p-2">
+            <img
+              src={galleryAsset('rnt-2026', 160)}
+              srcset={`${galleryAsset('rnt-2026', 160)} 160w, ${galleryAsset('rnt-2026', 320)} 320w`}
+              sizes="80px"
+              alt={t('footer.rnt_alt')}
+              width="80"
+              height="90"
+              loading="lazy"
+              decoding="async"
+              class="h-16 w-auto object-contain"
+            />
+            <figcaption class="mt-1 text-center text-[10px] font-medium text-white/40">RNT 179772</figcaption>
+          </figure>
+        </div>
       </div>
 
       <!-- Site navigation -->

@@ -15,6 +15,8 @@ export interface Props {
 
 const { locale } = Astro.props;
 const t = useTranslations(locale);
+const base = BASE_PATH.replace(/\/$/, '');
+const logoAsset = (width: number) => `${base}/brand/logo-disole-lockup-${width}.webp`;
 
 const sections = [
   { key: 'nav.home',      href: '#hero'        },
@@ -23,7 +25,7 @@ const sections = [
   { key: 'nav.santafe',   href: '#santa-fe'    },
   { key: 'nav.gallery',   href: '#galeria'     },
   { key: 'nav.location',  href: '#ubicacion'   },
-  { key: 'nav.materials', href: '#materiales'  },
+  /* { key: 'nav.materials', href: '#materiales' }, */ // temporarily hidden — re-enable when PDFs are ready
 ] as const;
 ---
 
@@ -36,10 +38,19 @@ const sections = [
     <!-- Brand -->
     <a
       href={`${BASE_PATH}/`}
-      class="font-heading text-xl font-bold text-primary no-select focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
-      aria-label="Apartasol 1104 DI Sole — Inicio"
+      class="flex items-center gap-2 rounded-md no-select focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+      aria-label="Apartasol 1104 Di Sole — Inicio"
     >
-      <span aria-hidden="true">✦</span> DI Sole
+      <img
+        src={logoAsset(160)}
+        srcset={`${logoAsset(160)} 160w, ${logoAsset(320)} 320w`}
+        sizes="48px"
+        alt={t('footer.logo_alt')}
+        width="160"
+        height="149"
+        class="h-10 w-auto rounded-md object-contain shadow-sm"
+      />
+      <span class="font-heading text-xl font-bold text-primary">Di Sole 1104</span>
     </a>
 
     <!-- Desktop nav -->
@@ -64,7 +75,8 @@ const sections = [
           <a
             href="#reservar"
             data-nav-link
-            class="ml-2 rounded-full bg-primary px-4 py-2 text-sm font-bold text-white shadow transition hover:bg-primary-dark focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary no-select"
+            data-nav-cta
+            class="ml-2 rounded-full bg-primary px-4 py-2 text-sm font-bold text-neutral shadow transition hover:bg-primary-dark focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary no-select"
           >
             {t('nav.book')}
           </a>
@@ -121,7 +133,8 @@ const sections = [
           <a
             href="#reservar"
             data-nav-link
-            class="block rounded-full bg-primary px-4 py-3 text-center text-base font-bold text-white shadow transition hover:bg-primary-dark focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary no-select"
+            data-nav-cta
+            class="block rounded-full bg-primary px-4 py-3 text-center text-base font-bold text-neutral shadow transition hover:bg-primary-dark focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary no-select"
           >
             {t('nav.book')}
           </a>
@@ -167,7 +180,7 @@ const sections = [
   });
 
   // Active section highlighting via IntersectionObserver
-  const navLinks = document.querySelectorAll('[data-nav-link]');
+  const navLinks = document.querySelectorAll('[data-nav-link]:not([data-nav-cta])');
   const sections = document.querySelectorAll('section[id], div[id="hero"]');
 
   const observer = new IntersectionObserver(

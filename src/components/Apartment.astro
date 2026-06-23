@@ -3,10 +3,11 @@
  * Apartment.astro — Apartment details: capacity, rooms, features, rules.
  * Displays the approved descriptive text from spec section 4.2.
  * CT-02..CT-12: capacity 8, 2 bedrooms AC, 3 bathrooms, 2 sofas, kitchen, washer,
- *               balcony, pool+mountain view, elevator, no hot water, rules.
+ *               balcony, pool+mountain view, elevator, rules.
  */
 import { useTranslations } from '../i18n/utils';
 import type { Locale } from '../i18n/utils';
+import { BASE_PATH } from '../config/site';
 
 export interface Props {
   locale: Locale;
@@ -14,40 +15,61 @@ export interface Props {
 
 const { locale } = Astro.props;
 const t = useTranslations(locale);
+const base = BASE_PATH.replace(/\/$/, '');
+const galleryAsset = (name: string, width: number) => `${base}/galeria/${name}-${width}.webp`;
+
+const roomHighlights = [
+  { name: 'salon-dia', labelKey: 'apartment.highlight_living' },
+  { name: 'habitacion-otra-vista', labelKey: 'apartment.highlight_bedroom' },
+  { name: 'cocina-salon', labelKey: 'apartment.highlight_kitchen' },
+  { name: 'balcon', labelKey: 'apartment.highlight_balcony' },
+] as const;
 
 const features = [
   {
     key: 'apartment.capacity',
+    image: 'salon-dia',
     icon: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="h-6 w-6"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z" /></svg>`,
-    highlight: true,
   },
   {
     key: 'apartment.bedrooms',
+    image: 'habitacion-otra-vista',
     icon: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="h-6 w-6"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 7.125C2.25 6.504 2.754 6 3.375 6h6c.621 0 1.125.504 1.125 1.125v3.75c0 .621-.504 1.125-1.125 1.125h-6a1.125 1.125 0 01-1.125-1.125v-3.75zM14.25 8.625c0-.621.504-1.125 1.125-1.125h5.25c.621 0 1.125.504 1.125 1.125v8.25c0 .621-.504 1.125-1.125 1.125h-5.25a1.125 1.125 0 01-1.125-1.125v-8.25zM3.75 16.125c0-.621.504-1.125 1.125-1.125h5.25c.621 0 1.125.504 1.125 1.125v2.25c0 .621-.504 1.125-1.125 1.125h-5.25a1.125 1.125 0 01-1.125-1.125v-2.25z" /></svg>`,
   },
   {
     key: 'apartment.bathrooms',
+    image: 'bano-principal',
     icon: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="h-6 w-6"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v12m-3-2.818l.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>`,
   },
   {
     key: 'apartment.sofas',
+    image: 'salon-cocina',
     icon: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="h-6 w-6"><path stroke-linecap="round" stroke-linejoin="round" d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z" /></svg>`,
   },
   {
     key: 'apartment.kitchen',
+    image: 'cocina-salon',
     icon: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="h-6 w-6"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8.25v-1.5m0 1.5c-1.355 0-2.697.056-4.024.166C6.845 8.51 6 9.473 6 10.608v2.513m6-4.871c1.355 0 2.697.056 4.024.166C17.155 8.51 18 9.473 18 10.608v2.513m-3-4.871v-1.5m-6 4.5V19.5m0 0H5.25A2.25 2.25 0 013 17.25v-1.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 15.75v1.5a2.25 2.25 0 01-2.25 2.25H18m-9 0v-2.625c0-.621.504-1.125 1.125-1.125h1.5c.621 0 1.125.504 1.125 1.125V19.5" /></svg>`,
   },
   {
-    key: 'apartment.washer',
-    icon: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="h-6 w-6"><path stroke-linecap="round" stroke-linejoin="round" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75a3.75 3.75 0 100-7.5 3.75 3.75 0 000 7.5z" /></svg>`,
-  },
-  {
     key: 'apartment.balcony',
+    image: 'balcon',
     icon: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="h-6 w-6"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12l8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25" /></svg>`,
   },
   {
     key: 'apartment.elevator',
+    image: 'porteria',
     icon: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="h-6 w-6"><path stroke-linecap="round" stroke-linejoin="round" d="M3 7.5L7.5 3m0 0L12 7.5M7.5 3v13.5m13.5 0L16.5 21m0 0L12 16.5m4.5 4.5V7.5" /></svg>`,
+  },
+  {
+    key: 'apartment.wifi',
+    image: 'salon-dia',
+    icon: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="h-6 w-6"><path stroke-linecap="round" stroke-linejoin="round" d="M8.288 15.038a5.25 5.25 0 017.424 0M5.106 11.856c3.807-3.808 9.98-3.808 13.788 0M1.924 8.674c5.565-5.565 14.587-5.565 20.152 0M12.53 18.22l-.53.53-.53-.53a.75.75 0 011.06 0z" /></svg>`,
+  },
+  {
+    key: 'apartment.smart_tv',
+    image: 'salon-cocina',
+    icon: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="h-6 w-6"><path stroke-linecap="round" stroke-linejoin="round" d="M6 20.25h12m-7.5-3v3m3-3v3m-10.125-3h17.25c.621 0 1.125-.504 1.125-1.125V4.875c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125z" /></svg>`,
   },
 ] as const;
 ---
@@ -75,49 +97,84 @@ const features = [
     <p>{t('apartment.description_3')}</p>
   </div>
 
-  <!-- Feature icon grid (CT-02..CT-10) -->
+  <!-- Room highlights: real photo backgrounds with a bottom-anchored gradient for legible labels -->
+  <div class="mt-12">
+    <h3 class="font-heading text-2xl font-bold text-neutral">
+      {t('apartment.highlights_heading')}
+    </h3>
+    <ul class="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-4" role="list">
+      {roomHighlights.map(({ name, labelKey }) => (
+        <li class="group relative min-h-52 overflow-hidden rounded-2xl bg-neutral shadow-lg">
+          <img
+            src={galleryAsset(name, 600)}
+            srcset={`${galleryAsset(name, 600)} 600w, ${galleryAsset(name, 1000)} 1000w`}
+            sizes="(min-width: 1024px) calc(25vw - 2rem), (min-width: 640px) calc(50vw - 2rem), calc(100vw - 2rem)"
+            alt=""
+            loading="lazy"
+            decoding="async"
+            width="1000"
+            height="750"
+            class="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+          />
+          <div class="absolute inset-x-0 bottom-0 h-2/3 bg-gradient-to-t from-black/70 via-black/10 to-transparent" aria-hidden="true"></div>
+          <div class="relative flex h-full min-h-52 items-end p-5">
+            <span class="font-heading text-2xl font-bold text-white no-select" style="text-shadow: 0 1px 3px rgb(0 0 0 / 0.85);">
+              {t(labelKey)}
+            </span>
+          </div>
+        </li>
+      ))}
+    </ul>
+  </div>
+
+  <!-- Feature photo grid (CT-02..CT-10) -->
   <ul
     class="mt-12 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4"
     role="list"
     aria-label={t('apartment.heading')}
   >
-    {features.map(({ key, icon, highlight }) => (
-      <li
-        class:list={[
-          'flex flex-col items-center gap-3 rounded-xl border p-5 text-center transition-shadow hover:shadow-md',
-          highlight
-            ? 'border-primary/30 bg-primary/5'
-            : 'border-neutral/10 bg-white',
-        ]}
-      >
+    {features.map(({ key, icon, image }) => (
+      <li class="group relative min-h-44 overflow-hidden rounded-xl bg-neutral text-center shadow-sm">
+        <img
+          src={galleryAsset(image, 600)}
+          srcset={`${galleryAsset(image, 600)} 600w, ${galleryAsset(image, 1000)} 1000w`}
+          sizes="(min-width: 1024px) calc(25vw - 2rem), (min-width: 640px) calc(33vw - 2rem), calc(50vw - 1rem)"
+          alt=""
+          loading="lazy"
+          decoding="async"
+          width="1000"
+          height="750"
+          class="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+        />
+        <div class="absolute inset-x-0 bottom-0 h-2/3 bg-gradient-to-t from-black/70 via-black/10 to-transparent" aria-hidden="true"></div>
+        <div class="relative flex h-full min-h-44 flex-col items-center justify-end gap-3 p-5">
         <span
-          class:list={['flex h-12 w-12 items-center justify-center rounded-full', highlight ? 'bg-primary text-white' : 'bg-secondary/10 text-secondary']}
+          class="flex h-12 w-12 items-center justify-center rounded-full bg-black/35 text-white backdrop-blur-sm"
           aria-hidden="true"
           set:html={icon}
         />
-        <span class:list={['text-sm font-semibold', highlight ? 'text-primary' : 'text-neutral']}>
+        <span class="text-sm font-bold leading-tight text-white" style="text-shadow: 0 1px 3px rgb(0 0 0 / 0.85);">
           {t(key)}
         </span>
+        </div>
       </li>
     ))}
   </ul>
 
-  <!-- Cold water notice (CT-11) -->
-  <div class="mt-6 flex items-start gap-3 rounded-lg border border-secondary/20 bg-secondary/5 px-5 py-4">
-    <svg xmlns="http://www.w3.org/2000/svg" class="mt-0.5 h-5 w-5 shrink-0 text-secondary" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
-      <path stroke-linecap="round" stroke-linejoin="round" d="M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z" />
-    </svg>
-    <p class="text-sm text-secondary-dark">{t('apartment.no_hot_water')}</p>
-  </div>
-
   <!-- House rules (CT-12) -->
-  <div class="mt-4 flex items-start gap-3 rounded-lg border border-neutral/10 bg-neutral/5 px-5 py-4">
+  <div class="mt-6 flex items-start gap-3 rounded-lg border border-neutral/10 bg-neutral/5 px-5 py-4">
     <svg xmlns="http://www.w3.org/2000/svg" class="mt-0.5 h-5 w-5 shrink-0 text-neutral/50" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
       <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
     </svg>
     <div>
       <p class="text-sm font-semibold text-neutral/70">{t('apartment.rules_heading')}</p>
-      <p class="text-sm text-neutral/60">{t('apartment.rules')}</p>
+      <ul class="mt-1 space-y-0.5 text-sm text-neutral/60">
+        {t('apartment.rules').split(' · ').map((rule: string) => (
+          <li>{rule}</li>
+        ))}
+        <li>{t('apartment.rules_quiet_hours')}</li>
+        <li>{t('apartment.rules_minors')}</li>
+      </ul>
     </div>
   </div>
 </section>

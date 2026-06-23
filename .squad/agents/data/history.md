@@ -84,6 +84,14 @@
 - Cloudflare proxy not yet activated (Y6 from Sloth) — owner action required for full Mozilla Observatory A/A+.
 
 
-## 2026-06-22T13:42:33+02:00 — Team update: DI Sole website build
+## 2026-06-22T16:22:37+02:00 — BASE_PATH env-override for local preview
+
+- Made `BASE_PATH` in `astro.config.mjs` read from `process.env.BASE_PATH ?? '/Web1104-1'` — nullish coalescing so `BASE_PATH=''` serves at root locally while unset env (CI/production) keeps `/Web1104-1` default. `deploy.yml` unchanged. Both builds verified: production keeps `/Web1104-1/_astro/…` prefix, local root removes it. Decision logged: `data-base-path-env-override.md`.
+
+## 2026-06-22T16:38:51+02:00 — Single source of truth for base path (bug fix)
+
+- Replaced hardcoded `export const BASE_PATH = '/Web1104-1' as const` in `src/config/site.ts` with a value derived from `import.meta.env.BASE_URL` so component links always follow Astro's active base. Fixes language switcher 404s locally. Decision logged: `data-base-path-single-source.md`.
+
+---
 
 Scribe merged the session decision inbox into `.squad\decisions.md`, archived no old decisions, and recorded orchestration/session logs. Data and Mouth resolved the code-owned YELLOW items from Sloth and Chunk: Astro HIGH audit item, .gitignore, SHA-pinned actions, skip link, responsive image attributes, OG image, robots cleanup, hreflang consistency, and privacy wording. Final build is clean with npm audit at 0 Critical / 0 High; owner-pending items remain Booking/Airbnb URLs, real photos, PDFs, Cloudflare Analytics token, distance data, and Cloudflare proxy for Observatory validation.

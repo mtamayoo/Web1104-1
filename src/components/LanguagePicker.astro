@@ -17,10 +17,16 @@ const t = useTranslations(locale);
 
 const base = BASE_PATH.replace(/\/$/, '');
 
+// Inline SVG flags — render identically on every OS (Windows has no emoji flag font).
+// Each SVG is 20×14 px; border-radius + overflow:hidden clips bands to rounded rectangle.
+const FLAG_CO = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 14" width="20" height="14" style="display:inline-block;vertical-align:middle;border-radius:2px;overflow:hidden;flex-shrink:0"><rect x="0" y="0" width="20" height="7" fill="#FCD116"/><rect x="0" y="7" width="20" height="3.5" fill="#003893"/><rect x="0" y="10.5" width="20" height="3.5" fill="#CE1126"/><rect x="0.25" y="0.25" width="19.5" height="13.5" rx="1.75" fill="none" stroke="black" stroke-opacity="0.12" stroke-width="0.5"/></svg>`;
+const FLAG_GB = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 14" width="20" height="14" style="display:inline-block;vertical-align:middle;border-radius:2px;overflow:hidden;flex-shrink:0"><rect width="20" height="14" fill="#012169"/><line x1="0" y1="0" x2="20" y2="14" stroke="#fff" stroke-width="3.5"/><line x1="20" y1="0" x2="0" y2="14" stroke="#fff" stroke-width="3.5"/><line x1="0" y1="0" x2="20" y2="14" stroke="#C8102E" stroke-width="1.5"/><line x1="20" y1="0" x2="0" y2="14" stroke="#C8102E" stroke-width="1.5"/><line x1="10" y1="0" x2="10" y2="14" stroke="#fff" stroke-width="5"/><line x1="0" y1="7" x2="20" y2="7" stroke="#fff" stroke-width="5"/><line x1="10" y1="0" x2="10" y2="14" stroke="#C8102E" stroke-width="3"/><line x1="0" y1="7" x2="20" y2="7" stroke="#C8102E" stroke-width="3"/><rect x="0.25" y="0.25" width="19.5" height="13.5" rx="1.75" fill="none" stroke="black" stroke-opacity="0.12" stroke-width="0.5"/></svg>`;
+const FLAG_FR = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 14" width="20" height="14" style="display:inline-block;vertical-align:middle;border-radius:2px;overflow:hidden;flex-shrink:0"><rect x="0" y="0" width="7" height="14" fill="#0055A4"/><rect x="7" y="0" width="6" height="14" fill="#FFFFFF"/><rect x="13" y="0" width="7" height="14" fill="#EF4135"/><rect x="0.25" y="0.25" width="19.5" height="13.5" rx="1.75" fill="none" stroke="black" stroke-opacity="0.12" stroke-width="0.5"/></svg>`;
+
 const options: { locale: Locale; hreflang: string; label: string; href: string; flag: string }[] = [
-  { locale: 'es', hreflang: 'es-CO', label: 'ES', href: `${base}/`,    flag: '🇨🇴' },
-  { locale: 'en', hreflang: 'en-US', label: 'EN', href: `${base}/en/`, flag: '🇬🇧' },
-  { locale: 'fr', hreflang: 'fr-FR', label: 'FR', href: `${base}/fr/`, flag: '🇫🇷' },
+  { locale: 'es', hreflang: 'es-CO', label: 'ES', href: `${base}/`,    flag: FLAG_CO },
+  { locale: 'en', hreflang: 'en-US', label: 'EN', href: `${base}/en/`, flag: FLAG_GB },
+  { locale: 'fr', hreflang: 'fr-FR', label: 'FR', href: `${base}/fr/`, flag: FLAG_FR },
 ];
 ---
 
@@ -35,11 +41,11 @@ const options: { locale: Locale; hreflang: string; label: string; href: string; 
       class:list={[
         'flex items-center gap-1 rounded-md px-2 py-1 font-medium transition-colors duration-150',
         l === locale
-          ? 'bg-primary text-white shadow-sm'
-          : 'text-neutral/70 hover:bg-primary/10 hover:text-neutral',
+          ? 'bg-primary text-neutral shadow-sm'
+          : 'text-white/80 hover:bg-white/10 hover:text-white',
       ]}
     >
-      <span aria-hidden="true">{flag}</span>
+      <span aria-hidden="true" set:html={flag}></span>
       <span>{label}</span>
     </a>
   ))}

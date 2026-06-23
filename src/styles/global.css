@@ -1,20 +1,20 @@
 /*
  * global.css — Tailwind v4 entry point
  * Theme tokens use Tailwind v4 @theme directive (no tailwind.config.js needed).
- * Palette: amber/gold (primary warmth) + sky blue (secondary, pool/water)
+ * Palette: Di Sole logo gold + navy + teal
  * See spec section 7: Tailwind CSS recommended.
  */
 @import "tailwindcss";
 
 @theme {
   /* Brand colours */
-  --color-primary:       #f59e0b; /* amber-400 — sun, warmth, CTA */
-  --color-primary-dark:  #d97706; /* amber-600 — hover/active */
-  --color-secondary:     #0ea5e9; /* sky-500 — pool, water, links */
-  --color-secondary-dark:#0284c7; /* sky-600 — hover/active */
-  --color-accent:        #065f46; /* emerald-900 — nature, mountain */
-  --color-neutral:       #1c1917; /* stone-900 — body text */
-  --color-surface:       #fafaf9; /* stone-50 — light backgrounds */
+  --color-primary:       #f2b20f; /* logo gold — sun, warmth, CTA */
+  --color-primary-dark:  #d99a0b; /* deeper gold — hover/active */
+  --color-secondary:     #2e2e80; /* logo navy — links, anchors, buttons */
+  --color-secondary-dark:#21215e; /* deeper navy — hover/active */
+  --color-accent:        #2e897a; /* logo teal — supporting accents */
+  --color-neutral:       #17172a; /* navy-tinted near-black — body text */
+  --color-surface:       #fffaf0; /* warm cream — light backgrounds */
 
   /* Typography */
   --font-family-sans: ui-sans-serif, system-ui, -apple-system, sans-serif;
@@ -35,7 +35,7 @@
   z-index: 9999;
   padding: 0.5rem 1rem;
   background: var(--color-primary);
-  color: #fff;
+  color: var(--color-neutral);
   font-weight: 700;
   font-size: 0.9rem;
   border-radius: 0 0 0.5rem 0.5rem;
@@ -111,16 +111,17 @@ section[id] {
 }
 @keyframes hero-crossfade {
   0%   { opacity: 1; }
-  38%  { opacity: 1; }
-  50%  { opacity: 0; }
-  100% { opacity: 0; }
+  20%  { opacity: 1; }
+  25%  { opacity: 0; }
+  95%  { opacity: 0; }
+  100% { opacity: 1; }
 }
 
 .hero-slide {
   position: absolute;
   inset: 0;
   opacity: 0;
-  animation: hero-crossfade 12s ease-in-out infinite;
+  animation: hero-crossfade 24s ease-in-out infinite;
 }
 
 /* ──────────────────────────────────────────────────────────
