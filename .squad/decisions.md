@@ -569,3 +569,71 @@ The "Materiales / Reference Materials / Documents" section (`<Materials>`) rende
 No errors or warnings.
 
 **Verification:** Build clean, Materials section hidden via comments (not deleted), easily re-enabled when PDFs ready.
+
+
+## Mouth / Frontend — 2026-06-23 Compact Hero (and Booking) CTAs on Mobile
+
+**Date:** 2026-06-23  
+**Author:** Mouth (Frontend Dev)  
+**Requested by:** mtamayoo  
+**Status:** Implemented ✅
+
+### Problem
+
+On phones (< `sm` / 640 px), the three reservation buttons in the Hero were each
+`h-14` (56 px) and full-width, stacked vertically with `gap-3` (12 px), making the
+CTA block ≈ 196 px tall plus the `mt-10` top margin — dominating the hero and
+obscuring the background photo slideshow.
+
+### Decision
+
+Use responsive Tailwind classes to reduce size on mobile while preserving the
+existing desktop layout unchanged.
+
+Approach chosen: **reduce height + padding + font + icon + gap on mobile, restore
+at `sm`**. The stack-of-3 layout is kept (not converted to 3-column on mobile)
+because "Booking.com" is too long to safely fit in a narrow column cell.
+
+### Changes
+
+#### `src/components/Hero.astro`
+
+| Element | Before | After |
+|---------|--------|-------|
+| Label top margin | `mt-10` | `mt-6 sm:mt-10` |
+| Grid gap | `gap-3` | `gap-2 sm:gap-3` |
+| Button height | `h-14` | `h-12 sm:h-14` |
+| Button padding-x | `px-6` | `px-4 sm:px-6` |
+| Button font size | `text-base` | `text-sm sm:text-base` |
+| SVG icon | `h-5 w-5` | `h-4 w-4 sm:h-5 sm:w-5` |
+
+#### `src/components/Booking.astro`
+
+Same responsive class changes applied for visual consistency (same CTA pattern,
+same user audience on mobile). Desktop layout unchanged.
+
+### Mobile savings (approximate)
+
+| | Before | After | Δ |
+|--|--------|-------|---|
+| Top margin | 40 px | 24 px | −16 px |
+| Each button height | 56 px | 48 px | −8 px |
+| Gap (×2) | 24 px | 16 px | −8 px |
+| **Total CTA block** | ~196 px | ~160 px | **−36 px** |
+
+### Preserved
+
+- All three destinations (BOOKING_URL / AIRBNB_URL / VRBO_URL)
+- `target="_blank" rel="noopener noreferrer"`
+- `aria-label` attributes on all buttons
+- `data-tracking` attributes in Booking section
+- Hover states (`hover:bg-primary-dark hover:scale-105`)
+- `focus-visible` rings
+- Desktop layout (all changes are bare-class mobile defaults, overridden at `sm:`)
+
+### Build result
+
+\`\`\`
+3 page(s) built in 1.34s — /index.html, /en/index.html, /fr/index.html
+Exit code: 0
+\`\`\`
