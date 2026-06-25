@@ -39,12 +39,12 @@ export const COPYRIGHT_YEAR = 2026 as const;
 // ── Deployment ─────────────────────────────────────────────────────────────
 // These mirror astro.config.mjs — kept here so components can reference them
 // without importing Vite env directly.
-/** TODO: Update with actual GitHub username */
-export const SITE_ORIGIN = 'https://mtamayoo.github.io' as const;
+/** Custom domain served via GitHub Pages (public/CNAME). */
+export const SITE_ORIGIN = 'https://disole1104.k.vu' as const;
 
 // Derived from astro.config.mjs `base` (via Vite). Guarantees internal links
 // always match the base Astro is actually serving with — no dual source of truth.
-// import.meta.env.BASE_URL = '/Web1104-1/' in production, '/' for local root.
+// import.meta.env.BASE_URL = '/' for the custom domain (served at root).
 const _rawBase = import.meta.env.BASE_URL ?? '/';
 export const BASE_PATH = _rawBase === '/' ? '' : _rawBase.replace(/\/+$/, '');
 
