@@ -5,4 +5,4 @@ Allow: /
 Disallow: /galeria/
 Disallow: /materiales/
 
-Sitemap: https://mtamayoo.github.io/Web1104-1/sitemap-index.xml
+Sitemap: https://disole1104.k.vu/sitemap-index.xml
