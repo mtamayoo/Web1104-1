@@ -110,7 +110,10 @@ const jsonLd = {
   // Hreflang via JSON-LD sameAs / potentialAction are omitted; hreflang tags cover this.
 };
 
-const jsonLdString = JSON.stringify(jsonLd, null, 2);
+const jsonLdString = JSON.stringify(jsonLd, null, 2)
+  .replace(/</g, '\\u003c')
+  .replace(/>/g, '\\u003e')
+  .replace(/&/g, '\\u0026');
 const jsonLdHash = createHash('sha256').update(jsonLdString, 'utf8').digest('base64');
 
 /*

@@ -795,11 +795,11 @@ Because `define:vars` injects runtime values, each component's inline script has
 ### A-01 — Low-opacity text contrast (OUT OF SCOPE — needs Lighthouse audit)
 No change. Requires a visual/pixel-level audit tool (Lighthouse), not a static-code fix.
 
-### L-02 — JSON-LD HTML-escape (NO ACTION NEEDED)
-Content is fully static (`as const`). No dynamic fields exist. Safe to defer until/if CMS content is introduced.
+### L-02 — JSON-LD HTML-escape (FIXED)
+JSON-LD is now defense-in-depth escaped for `<`, `>`, and `&` before hashing and emission, so the CSP hash covers the exact escaped script bytes.
 
-### L-04 — Dev-only npm audit (NO URGENCY)
-`npm audit --omit=dev` shows 0 production vulnerabilities. Defer `npm audit fix` to next maintenance window.
+### L-04 — Dev-only npm audit (FIXED)
+`npm audit` and `npm audit --omit=dev` now show 0 vulnerabilities. The dev-only `yaml` chain is resolved with a non-force `volar-service-yaml` override to 0.0.71.
 
 ---
 
