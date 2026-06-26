@@ -3,7 +3,7 @@
  * Extended security assertions for Apartasol 1104 Di Sole.
  *
  * Implements Gustave's 7-item findings report:
- *  1. CSP no-unsafe-inline target state (fixme — H-01)
+ *  1. CSP no-unsafe-inline target state (active — H-01)
  *  2. rel="noopener noreferrer" completeness on ALL locales (active)
  *  3. Plaintext-secret scan with extended patterns (active)
  *  4. External-CTA redirect-destination validation (skip if offline)
@@ -30,9 +30,8 @@ async function noRedirect(page: Page) {
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 for (const url of PAGES) {
-  // Target state — flip to active once H-01 (remove 'unsafe-inline' from script-src) is remediated.
-  test.fixme(
-    `[${url}] CSP script-src does NOT contain 'unsafe-inline' (target state H-01)`,
+  test(
+    `[${url}] CSP script-src is hash-pinned without 'unsafe-inline' (H-01)`,
     async ({ page }) => {
       await noRedirect(page);
       await page.goto(url);
@@ -44,6 +43,10 @@ for (const url of PAGES) {
         scriptSrc,
         "script-src must not contain 'unsafe-inline'",
       ).not.toContain("'unsafe-inline'");
+      expect(
+        scriptSrc,
+        'script-src must include a SHA-256 hash for the inline JSON-LD script',
+      ).toContain("'sha256-");
     },
   );
 }

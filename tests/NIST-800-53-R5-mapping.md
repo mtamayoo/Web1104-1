@@ -60,11 +60,11 @@ architecture decisions made at the organisational level:
 |------------|-------|--------|--------|----------------|-------|
 | **SC-8** | Transmission Confidentiality and Integrity | SC | COVERED / PARTIAL | `SC-8 [url]: canonical URL uses HTTPS` `SC-8 [url]: og:url uses HTTPS` `SC-8 [url]: all hreflang alternate URLs use HTTPS` | Canonical, og:url, hreflang hrefs use https:// → COVERED. `upgrade-insecure-requests` and HSTS only in `_headers` → PARTIAL (CDN). |
 | **SC-7** | Boundary Protection | SC | COVERED / PARTIAL | `SC-7 [url]: CSP default-src restricts to self` `SC-7 [url]: CSP object-src none` `SC-7 [url]: CSP base-uri self` | meta CSP enforces default-src/object-src/base-uri → COVERED. `frame-ancestors 'none'` and `X-Frame-Options: DENY` are CDN-only → PARTIAL. |
-| **SC-18** | Mobile Code | SC | PARTIAL | `SC-18 [url]: CSP script-src contains no wildcard *` `SC-18 [url] PARTIAL: script-src does not allow unsafe-eval` | No wildcard in script-src, no unsafe-eval → COVERED aspects. `'unsafe-inline'` IS present (Astro/CF Analytics build requirement) → inline execution not blocked → PARTIAL. |
+| **SC-18** | Mobile Code | SC | COVERED | `SC-18 [url]: CSP script-src contains no wildcard *` `SC-18 [url] PARTIAL: script-src does not allow unsafe-eval` | No wildcard in script-src, no unsafe-eval, and JSON-LD is hash-pinned in script-src. |
 | **SC-23** | Session Authenticity | SC | N/A | `test.skip` in nist-800-53.spec.ts | Static site. No sessions, no auth, no cookies. Architecturally inapplicable. |
 | **AC-4** | Information Flow Enforcement | AC | COVERED | `AC-4 [url]: CSP form-action none` `AC-4 [url]: CSP frame-src restricted to google.com allowlist` `AC-4 [url]: CSP connect-src contains self` | meta CSP enforces form-action 'none', frame-src allowlist, connect-src 'self'. Fully verifiable via served HTML. |
 | **SI-10** | Information Input Validation | SI | COVERED / N/A | `SI-10 [url]: no form elements with POST to external endpoints` | No `<form method=post>` elements with external action in served DOM. CSP form-action 'none' is the browser-level enforcement. Static site with no backend → trivially satisfied. |
-| **SI-3** | Malicious Code Protection | SI | PARTIAL | `SI-3 [url]: CSP object-src none` `SI-3 [url]: CSP script-src does not allow unsafe-eval` | object-src 'none' and no unsafe-eval in script-src → COVERED aspects. 'unsafe-inline' present in script-src → inline injection not blocked if HTML were compromised → PARTIAL. No user-generated content / injection surface exists. |
+| **SI-3** | Malicious Code Protection | SI | COVERED | `SI-3 [url]: CSP object-src none` `SI-3 [url]: CSP script-src does not allow unsafe-eval` | object-src 'none', no unsafe-eval, and no unsafe-inline in script-src; legitimate inline JSON-LD is hash-pinned. No user-generated content / injection surface exists. |
 | **SI-15** | Information Output Filtering | SI | COVERED | `SI-15 [url]: served HTML contains no debug or error-output markers` | No JS stack traces, Python tracebacks, HTTP 500 messages, or debug HTML comments in served output. Distinct from secret-pattern checks in security.spec.ts. |
 | **CM-6** | Configuration Settings | CM | PARTIAL | `CM-6 [PARTIAL/CDN]: X-Content-Type-Options nosniff in _headers` `CM-6 [PARTIAL/CDN]: Referrer-Policy strict-origin-when-cross-origin in _headers` | Headers declared in `public/_headers` (repo intent verified). Absent on bare GitHub Pages; CDN-only enforcement. |
 | **CM-7** | Least Functionality | CM | PARTIAL | `CM-7 [PARTIAL/CDN]: Permissions-Policy disables camera/microphone/geolocation/payment` | Permissions-Policy declared in `public/_headers`. CDN-only enforcement. Disables camera, mic, geolocation, payment, interest-cohort. |
@@ -106,9 +106,9 @@ following reasons:
    Permissions, frame-ancestors) require HTTP response headers that GitHub Pages
    cannot emit. They are enforced only when Cloudflare is proxying.
 
-3. **'unsafe-inline' in script-src**: SC-18 and SI-3 are PARTIAL because
-   `'unsafe-inline'` is present in the meta CSP script-src (Astro/CF Analytics
-   build requirement). A nonce-based CSP would fully cover these controls.
+3. **Inline script control**: The legitimate JSON-LD script is hash-pinned in
+   the meta CSP. `style-src 'unsafe-inline'` remains for Astro/Tailwind inline
+   styles and is tracked separately from script execution.
 
 4. **No server-side controls**: AU (audit logging), IA (auth), CP (backup),
    IR (incident response) and all other server/org controls are entirely

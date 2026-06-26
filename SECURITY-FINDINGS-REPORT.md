@@ -65,11 +65,10 @@ Coverage: CSP `<meta>` presence, `rel=noopener noreferrer` completeness, plainte
 
 ### HIGH
 
-#### H-01 · `script-src 'unsafe-inline'` defeats the script CSP
+#### H-01 · `script-src 'unsafe-inline'` defeats the script CSP — RESOLVED
 - **File:** `src/layouts/Layout.astro:134`, `public/_headers:21`
-- **Cause:** Both the meta CSP and the CDN `_headers` CSP include `'unsafe-inline'` in `script-src`, permitting any inline `<script>` to execute. The only legitimate inline script is the JSON-LD block (`Layout.astro:188`); the Cloudflare analytics script already loads via `src=`, so inline is not actually needed.
-- **Description:** `'unsafe-inline'` neutralizes the primary XSS protection CSP is meant to provide. Exploitability is low today (fully static, no user input), but the policy provides no meaningful script-injection defense as written.
-- **Suggested action plan:** (1) Compute the SHA-256 hash of the exact bytes emitted into the `<script type="application/ld+json">` block at build time (Astro integration or a `scripts/` post-process step). (2) Replace `'unsafe-inline'` with `'sha256-<base64hash>'` in **both** CSP locations. (3) The CF analytics `<script src>` already satisfies `'self' https://static.cloudflareinsights.com` — no hash needed. (4) Because `inLanguage`/`url` differ per locale, either emit one hash per locale variant, or move those dynamic fields out of JSON-LD into `<meta>` tags so the hashed block becomes locale-invariant.
+- **Cause:** Both the meta CSP and the CDN `_headers` CSP previously included `'unsafe-inline'` in `script-src`, permitting any inline `<script>` to execute.
+- **Resolution:** The only legitimate inline script, JSON-LD, is now SHA-256 hash-pinned. The meta CSP computes the per-locale hash from the exact emitted JSON-LD bytes; `_headers` carries the three locale hashes for CDN deployments. Cloudflare analytics remains allowed by `src=`.
 
 #### H-02 · `img-src https:` wildcard is overly broad
 - **File:** `src/layouts/Layout.astro:136`, `public/_headers:21`
@@ -156,7 +155,7 @@ These passed but carry caveats the team should keep visible:
 
 Encoded in `tests/security-extended.spec.ts` to prevent regressions after the above fixes land:
 
-1. CSP presence + no-`unsafe-inline` check per page (no-`unsafe-inline` portion is `test.fixme`, pending H-01).
+1. CSP presence + no-`unsafe-inline` + SHA-256 JSON-LD hash check per page.
 2. `rel="noopener noreferrer"` completeness on all `target="_blank"` (all locales).
 3. Build-time / rendered-HTML plaintext-secret scan (`sk_`, `pk_`, `AIza`, `Bearer `, `apiKey`, …).
 4. External-CTA redirect-destination validation (guards L-01); skips gracefully when offline.
@@ -168,7 +167,7 @@ Encoded in `tests/security-extended.spec.ts` to prevent regressions after the ab
 
 ## Suggested remediation order
 
-1. **H-01, H-02** — CSP hardening. Highest security value.
+1. **H-02** — CSP image-source hardening. Highest remaining CSP value.
 2. **M-03** — add `upgrade-insecure-requests` to meta CSP + fix the incorrect comment (cheap, matters most on GitHub Pages).
 3. **M-04 + L-03** — iframe sandbox + referrerpolicy (single edit in `Location.astro`).
 4. **M-01, M-02, M-05** — COOP/CORP/HSTS-preload in `_headers` (apply alongside Cloudflare activation).

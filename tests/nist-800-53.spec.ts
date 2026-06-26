@@ -202,9 +202,7 @@ test.describe('SC-7: Boundary Protection', () => {
 // Verifiable: CSP script-src restricts which origins may supply scripts.
 //   No wildcard '*' in script-src                                    COVERED
 //   'unsafe-eval' absent from script-src                            COVERED
-//   'unsafe-inline' PRESENT (Astro/CF Analytics build requirement)  PARTIAL
-//     — inline script execution is not blocked; however the site has
-//       no user-generated content or injection surface.
+//   JSON-LD hash-pinned; no 'unsafe-inline' in script-src            COVERED
 
 test.describe('SC-18: Mobile Code', () => {
   for (const url of PAGES) {
@@ -220,10 +218,8 @@ test.describe('SC-18: Mobile Code', () => {
       ).not.toContain('*');
     });
 
-    // PARTIAL: 'unsafe-inline' is in script-src (Astro JSON-LD + Tailwind build
-    // requirement). This means inline scripts are permitted.
-    // This test documents the current state (informational assertion).
-    test(`SC-18 [${url}] PARTIAL: script-src does not allow unsafe-eval (stronger primitive)`, async ({ page }) => {
+    // JSON-LD is hash-pinned in script-src; eval remains explicitly blocked.
+    test(`SC-18 [${url}]: script-src does not allow unsafe-eval (eval-based injection blocked)`, async ({ page }) => {
       await noRedirect(page);
       await page.goto(url);
       const csp = await getCspContent(page);
@@ -234,11 +230,11 @@ test.describe('SC-18: Mobile Code', () => {
         scriptSrcValue,
         "script-src must not contain 'unsafe-eval'",
       ).not.toContain("'unsafe-eval'");
-      // Informational: log presence of 'unsafe-inline' for the matrix without failing
+      // Informational: log unexpected 'unsafe-inline' for the matrix without failing.
       if (scriptSrcValue.includes("'unsafe-inline'")) {
         console.info(
           `[SC-18 PARTIAL] ${url}: script-src contains 'unsafe-inline' ` +
-          `(Astro JSON-LD + Cloudflare Analytics build requirement — known gap)`,
+          `(unexpected after H-01 remediation)`,
         );
       }
     });
@@ -356,7 +352,7 @@ test.describe('SI-10: Information Input Validation', () => {
 //   object-src 'none'      — plugin-based code (Flash, ActiveX) blocked     COVERED
 //   no 'unsafe-eval'       — eval()-based code injection prevented           COVERED
 //   no wildcard in script-src                                                COVERED
-//   'unsafe-inline' present (Astro build req) — inline injection not blocked PARTIAL
+//   JSON-LD hash-pinned; no 'unsafe-inline' in script-src                    COVERED
 
 test.describe('SI-3: Malicious Code Protection', () => {
   for (const url of PAGES) {

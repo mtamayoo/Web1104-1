@@ -16,6 +16,7 @@
  * canonical    : string?                canonical URL override
  */
 import type { Locale } from '../i18n/utils';
+import { createHash } from 'node:crypto';
 import { getLangAttr, getOgLocale, useTranslations } from '../i18n/utils';
 import {
   PROPERTY_NAME,
@@ -109,6 +110,9 @@ const jsonLd = {
   // Hreflang via JSON-LD sameAs / potentialAction are omitted; hreflang tags cover this.
 };
 
+const jsonLdString = JSON.stringify(jsonLd, null, 2);
+const jsonLdHash = createHash('sha256').update(jsonLdString, 'utf8').digest('base64');
+
 /*
  * CSP DECISION (OBJ-SEC-03, section 13.2)
  * GitHub Pages cannot set HTTP response headers, so CSP is delivered via <meta http-equiv>.
@@ -120,7 +124,7 @@ const jsonLd = {
  * See .squad/decisions/inbox/data-csp-policy.md for rationale.
  *
  * Allowed sources:
- *   scripts   : self + Cloudflare Analytics (static.cloudflareinsights.com)
+ *   scripts   : self + hash-pinned JSON-LD + Cloudflare Analytics (static.cloudflareinsights.com)
  *   styles    : self + unsafe-inline (Astro/Tailwind injects inline styles at build time)
  *   images    : self + data: (no cross-origin images rendered at runtime — H-02)
  *   fonts     : self (no external font CDN in v1)
@@ -132,7 +136,7 @@ const jsonLd = {
  */
 const CSP = [
   "default-src 'self'",
-  "script-src 'self' 'unsafe-inline' https://static.cloudflareinsights.com",
+  `script-src 'self' 'sha256-${jsonLdHash}' https://static.cloudflareinsights.com`,
   "style-src 'self' 'unsafe-inline'",
   "img-src 'self' data:",
   "font-src 'self'",
@@ -187,7 +191,7 @@ const CSP = [
     <meta name="twitter:image"       content={ogImageURL} />
 
     <!-- ── JSON-LD: LodgingBusiness / Apartment (section 8.1, RF-07) ────── -->
-    <script type="application/ld+json" set:html={JSON.stringify(jsonLd, null, 2)} />
+    <script type="application/ld+json" set:html={jsonLdString} />
 
     <!-- ── Cloudflare Web Analytics (section 8.3) ───────────────────────── -->
     <!-- Activated only when CF_ANALYTICS_TOKEN is set in src/config/site.ts -->
