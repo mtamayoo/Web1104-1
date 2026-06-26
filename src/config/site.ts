@@ -12,13 +12,16 @@
 
 // ── External booking links ─────────────────────────────────────────────────
 /** Live Booking.com listing URL. */
-export const BOOKING_URL = 'https://tinyurl.com/DiSole1104B' as const;
+export const BOOKING_URL = 'https://www.booking.com/hotel/co/citadela-di-sole-santafe-de-antioquia.es.html' as const;
+// tinyurl archive: https://tinyurl.com/DiSole1104B
 
 /** Live Airbnb listing URL. */
-export const AIRBNB_URL = 'https://tinyurl.com/DiSole1104A' as const;
+export const AIRBNB_URL = 'https://www.airbnb.com/rooms/988444281810031125' as const;
+// tinyurl archive: https://tinyurl.com/DiSole1104A
 
 /** Live Vrbo listing URL. */
-export const VRBO_URL = 'https://tinyurl.com/DiSole1104V' as const;
+export const VRBO_URL = 'https://www.vrbo.com/es-es/p11496031' as const;
+// tinyurl archive: https://tinyurl.com/DiSole1104V
 
 // ── Location ───────────────────────────────────────────────────────────────
 export const GEO_LAT = 6.5576942 as const;

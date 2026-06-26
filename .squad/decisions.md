@@ -637,3 +637,228 @@ same user audience on mobile). Desktop layout unchanged.
 3 page(s) built in 1.34s — /index.html, /en/index.html, /fr/index.html
 Exit code: 0
 \`\`\`
+
+## Session Decisions - 2026-06-26 crash resume and local QA
+
+### Merged from .squad\decisions\inbox\chunk-cta-url-expectations.md
+
+# Chunk decision: update CTA URL expectations
+
+- Date: 2026-06-26T13:57:24+02:00
+- Tester: Chunk
+- Decision: Treat the initial Playwright CTA failures as test expectation drift, not a product regression.
+- Rationale: `src/config/site.ts` now uses direct Booking.com/Airbnb/Vrbo URLs for the security fix, while `tests/functionality.spec.ts` still expected the old TinyURL redirectors. Updated the test constants to the live URLs before rerunning the full suite.
+
+### Merged from .squad\decisions\inbox\mouth-emdash.md
+
+# Decision: Remove em dashes from visible site content
+
+**By:** Mouth  
+**Date:** 2026-06-26T12:56:53+02:00  
+**Status:** Applied
+
+## What
+Removed all em dashes (U+2014 —) from visible rendered content across ES/EN/FR locales and Astro components, applying four distinct replacement rules approved by mtamayoo.
+
+## Changes
+
+### 1 — Hero subtitle (`amenities.subtitle`)
+- `src/i18n/es.json` line 60: `" — "` → `", "` (en familia, todo dentro del complejo)
+- `src/i18n/en.json` line 60: `" — "` → `", "` (family fun, all within the complex)
+- `src/i18n/fr.json` line 60: `" — "` → `", "` (en famille, tout au sein du complexe)
+
+### 2 — Location distance/dining list items (`dist_1–4`, `dining_1–3`)
+- All three locale files, lines ~133–140: `" — "` → `": "` (colon+space separator)
+- Examples: "Plaza Mayor: a 4 cuadras a pie", "Cafetería La Chinca: 250 m"
+
+### 3 — Footer `legal_text` (paired em dashes around appositive)
+- `src/i18n/es.json` line 176: `" —…—"` (no-space style) → `" (…)"`
+- `src/i18n/en.json` line 176: `" — … — "` → `" (…) "`
+- `src/i18n/fr.json` line 176: `" — … — "` → `" (…) "`
+
+### 4 — Component aria-labels
+- `src/components/Nav.astro` line 42: `" — "` → `", "` in brand link aria-label
+- `src/components/Materials.astro` line 92: `" — "` → `", "` in pending-material aria-label
+
+## Why
+Em dashes in visible text were flagged as typographic inconsistency. The replacements maintain readability while using more universally supported punctuation. Code comments were explicitly left untouched.
+
+## Validation
+`grep` confirmed zero em dashes remain in the targeted JSON fields and component lines. JSON structure unchanged (no brace/quote imbalance introduced).
+
+### Merged from .squad\decisions\inbox\mouth-narrow-mobile-cta.md
+
+# Decision: Narrow mobile CTA button group
+
+**Date:** 2026-06-23  
+**Author:** Mouth (Frontend Dev)  
+**Requested by:** mtamayoo  
+**Status:** Applied
+
+## Problem
+On mobile, the reservation CTA button group spanned full viewport width, covering too much of the hero photo.
+
+## Decision
+Constrain the grid container to `max-w-[16rem]` (256 px) on mobile and re-center with `mx-auto`. Desktop (`sm:`) reverts to `sm:max-w-none` keeping the 3-up equal-width row unchanged.
+
+Chosen value rationale: `16rem` (256 px) sits in the instructed `15rem–max-w-xs` target range. It comfortably fits "Booking.com" + icon at `text-sm` with `px-4` padding (min content ~145 px) while visibly uncovering the hero photo on 360 px+ phones.
+
+## Files changed
+| File | Grid container class — before | Grid container class — after |
+|---|---|---|
+| `src/components/Hero.astro` | `mt-3 grid w-full grid-cols-1 gap-2 sm:grid-cols-3 sm:gap-3` | `mt-3 grid w-full grid-cols-1 gap-2 mx-auto max-w-[16rem] sm:max-w-none sm:grid-cols-3 sm:gap-3` |
+| `src/components/Booking.astro` | `mt-3 grid w-full grid-cols-1 gap-2 sm:grid-cols-3 sm:gap-3` | `mt-3 grid w-full grid-cols-1 gap-2 mx-auto max-w-[16rem] sm:max-w-none sm:grid-cols-3 sm:gap-3` |
+
+## Unchanged
+- Button heights `h-12 sm:h-14`
+- Gaps `gap-2 sm:gap-3`
+- Desktop 3-up layout
+- All links, aria labels, data-tracking attributes
+- Hover/focus styles, whitespace-nowrap
+
+## Build result
+`npm run build` → 3 pages built in 1.21 s. Exit 0.
+
+### Merged from .squad\decisions\inbox\sloth-secfixes.md
+
+# Security Hardening Fixes — Sloth
+**Date:** 2026-06-26  
+**Author:** Sloth (Security Reviewer)  
+**Source findings:** SECURITY-FINDINGS-REPORT.md
+
+---
+
+## Applied fixes
+
+### M-03 — `upgrade-insecure-requests` added to meta CSP (FIXED)
+- Added `"upgrade-insecure-requests"` to the CSP array in `src/layouts/Layout.astro`.
+- Corrected the inaccurate comment that claimed this directive cannot be set via `<meta>`.  
+  Only HSTS is header-only; `upgrade-insecure-requests` is fully supported in `<meta http-equiv="Content-Security-Policy">`.
+- File: `src/layouts/Layout.astro`
+
+### H-02 — `img-src` wildcard tightened (FIXED)
+- Changed `img-src 'self' data: https:` → `img-src 'self' data:` in both:
+  - `src/layouts/Layout.astro` (meta CSP)
+  - `public/_headers` (CDN CSP)
+- No cross-origin images are rendered at runtime; the `https:` wildcard was unnecessary.
+
+### M-04 + L-03 — Google Maps iframe hardened (FIXED)
+- Added `sandbox="allow-scripts allow-same-origin allow-popups allow-forms"` to the `<iframe>` in `src/components/Location.astro`.
+  - `allow-scripts` + `allow-same-origin` are both required for the map to render and navigate.
+  - `allow-popups` permits the "Open in Google Maps" link from within the embed.
+  - `allow-forms` is included per the minimal viable set from the report.
+- Changed `referrerpolicy="no-referrer-when-downgrade"` → `referrerpolicy="strict-origin"` (sends only origin, not full path).
+- File: `src/components/Location.astro`
+
+### M-01 — `Cross-Origin-Opener-Policy` added (FIXED)
+- Added `Cross-Origin-Opener-Policy: same-origin` to `public/_headers` within the `/*` block.
+
+### M-02 — `Cross-Origin-Resource-Policy` added (FIXED)
+- Added `Cross-Origin-Resource-Policy: same-site` to `public/_headers`.
+  - Used `same-site` (not `same-origin`) so the `disole1104.k.vu` custom domain serves all subdomain contexts cleanly.
+
+### M-05 — HSTS preload directive added (FIXED)
+- Changed `Strict-Transport-Security: max-age=31536000; includeSubDomains` →  
+  `Strict-Transport-Security: max-age=31536000; includeSubDomains; preload` in `public/_headers`.
+- **Action required:** Submit domain to https://hstspreload.org once Cloudflare proxy is confirmed active.
+
+### L-01 — Booking URLs resolved to canonical (FIXED)
+- Resolved all three tinyurl shortlinks via `curl -sI -L` redirect following:
+  - `BOOKING_URL` → `https://www.booking.com/hotel/co/citadela-di-sole-santafe-de-antioquia.es.html`
+  - `AIRBNB_URL` → `https://www.airbnb.com/rooms/988444281810031125`  
+    (via `airbnb.com/h/disole1104` → `www.airbnb.com/h/disole1104` → `/rooms/988444281810031125`)
+  - `VRBO_URL` → `https://www.vrbo.com/es-es/p11496031`
+- Note: tinyurl's redirect chain passes through a VigLink affiliate step (tinyurl monetization); final destinations are verified booking-platform URLs.
+- Original tinyurl shortcuts archived in `site.ts` comments for reference.
+- File: `src/config/site.ts`
+
+---
+
+## Deferred / Left-as-is
+
+### H-01 — `script-src 'unsafe-inline'` (LEFT AS-IS — too risky to automate in this pass)
+**Why blocked:**  
+An investigation of inline scripts in the source revealed that `'unsafe-inline'` is NOT only protecting the JSON-LD block. Multiple Astro components use `<script define:vars={...}>` which Astro renders as inline scripts in the final HTML:
+- `Gallery.astro:220` — `<script define:vars={{ imageOf }}>`
+- `LanguagePicker.astro:61` — `<script define:vars={{ base, locale }}>`
+- `Hero.astro:160` — plain `<script>` (likely bundled to external file by Astro)
+- `Nav.astro:150` — plain `<script>` (likely bundled)
+
+Because `define:vars` injects runtime values, each component's inline script has a different hash per locale variant and per Astro version/build. Removing `'unsafe-inline'` without hashing ALL inline scripts would break the language picker and gallery functionality.
+
+**Recommended path forward:**
+1. Run a full build and inspect the exact inline script bytes emitted for each component across all 3 locales.
+2. For `define:vars` scripts: either convert the variable injection to a `data-*` attribute approach (keeping the script external and hashable), or add an Astro integration that post-processes HTML and computes + injects `'sha256-<hash>'` entries for all inline scripts.
+3. Only then can `'unsafe-inline'` be safely removed from both `script-src` locations.
+4. The `test.fixme` guard in `tests/security-extended.spec.ts` correctly holds this check pending this work.
+
+### A-01 — Low-opacity text contrast (OUT OF SCOPE — needs Lighthouse audit)
+No change. Requires a visual/pixel-level audit tool (Lighthouse), not a static-code fix.
+
+### L-02 — JSON-LD HTML-escape (NO ACTION NEEDED)
+Content is fully static (`as const`). No dynamic fields exist. Safe to defer until/if CMS content is introduced.
+
+### L-04 — Dev-only npm audit (NO URGENCY)
+`npm audit --omit=dev` shows 0 production vulnerabilities. Defer `npm audit fix` to next maintenance window.
+
+---
+
+## Build result
+`npm run build` passed: **3 pages built, 0 errors** after all applied fixes.
+
+### Merged from .squad\decisions\inbox\chunk-local-verdict.md
+
+# Chunk local verdict — 2026-06-26 14:37 CEST
+
+Requested by: mtamayoo
+
+## Overall verdict: GREEN
+
+Decision: Chunk GREEN local-suite verdict after crash resume. Safe to publish for the current custom-domain/root deployment configuration.
+
+Local verification completed successfully after the interrupted session.
+
+## Commands run
+
+- `npm run build` — passed. Astro built 3 static pages into the `dist` directory.
+- Started local preview with `npx astro preview --host 127.0.0.1 --port 4321` — confirmed responsive at `http://127.0.0.1:4321/` with HTTP 200.
+- `npx playwright test --reporter=line` — passed with exit code 0.
+- Re-ran with JSON reporter for counts — passed with exit code 0.
+
+No `es-CO` Playwright locale change was required; no redirect/locale failures occurred.
+
+## Per-spec results
+
+| Spec file | Passed | Failed | Skipped | Notes |
+|---|---:|---:|---:|---|
+| `tests\accessibility.spec.ts` | 30 | 0 | 0 | Green |
+| `tests\functionality.spec.ts` | 25 | 0 | 0 | Green |
+| `tests\security.spec.ts` | 20 | 0 | 0 | Green |
+| `tests\security-extended.spec.ts` | 12 | 0 | 10 | H-01 `unsafe-inline` tests are `test.fixme` as expected; M-03 meta CSP tests are also `fixme`; HTTP header checks are skipped locally because GitHub Pages/local preview cannot emit CDN headers. |
+| `tests\nist-800-53.spec.ts` | 55 | 0 | 2 | Two N/A static-site controls skipped: SC-23 session authenticity and AU-2/AU-12 audit events. |
+
+Total: 142 passed, 0 failed, 12 skipped, 154 tests.
+
+## Genuine failures
+
+None found.
+
+## Harness/environment observations
+
+- Local preview served the current build at `/` and `/en/`/`/fr/`; `/Web1104-1/` returned 404.
+- This matches current repo configuration: `astro.config.mjs` defaults `base` to empty string and `public\CNAME` contains `disole1104.k.vu`, so custom-domain GitHub Pages deploy is root-based.
+- If the intended production target changes back to repository-path GitHub Pages (`/Web1104-1` without custom domain), Data should revisit `astro.config.mjs`/deployment base-path configuration and Playwright base URL assumptions.
+
+## Security-finding status
+
+- No local regression detected for Sloth's fixed findings.
+- H-01 remains intentionally unresolved and guarded by `test.fixme`, as expected.
+- No rejection needed; no different-agent revision is required from this QA run.
+
+## Publish recommendation
+
+Safe to publish to GitHub Pages for the current custom-domain/root deployment configuration.
+
+## Cleanup
+
+Stopped the preview server listener on port 4321 (`node` PID 28648).

@@ -28,3 +28,6 @@ npm-debug.log*
 # Windows
 Thumbs.db
 ehthumbs.db
+test-results/
+preview-server.log
+preview-server.err.log

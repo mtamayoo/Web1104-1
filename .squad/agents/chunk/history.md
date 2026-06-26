@@ -13,3 +13,4 @@
 ## 2026-06-22T13:42:33+02:00 — Team update: DI Sole website build
 
 Scribe merged the session decision inbox into `.squad\decisions.md`, archived no old decisions, and recorded orchestration/session logs. Data and Mouth resolved the code-owned YELLOW items from Sloth and Chunk: Astro HIGH audit item, .gitignore, SHA-pinned actions, skip link, responsive image attributes, OG image, robots cleanup, hreflang consistency, and privacy wording. Final build is clean with npm audit at 0 Critical / 0 High; owner-pending items remain Booking/Airbnb URLs, real photos, PDFs, Cloudflare Analytics token, distance data, and Cloudflare proxy for Observatory validation.
+- 2026-06-26T14:37:00+02:00: Completed crash-resume local QA run with GREEN verdict: npm run build, local preview, and Playwright suite passed with 142 passed, 0 failed, 12 skipped; H-01 CSP unsafe-inline remains expected test.fixme. Safe to publish for current custom-domain/root deployment.
