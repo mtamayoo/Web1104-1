@@ -64,3 +64,16 @@ export const BASE_PATH = _rawBase === '/' ? '' : _rawBase.replace(/\/+$/, '');
  * Empty string = analytics beacon disabled (no beacon injected into HTML).
  */
 export const CF_ANALYTICS_TOKEN = '' as const; // empty = disabled
+
+// ── Microsoft Clarity Analytics ───────────────────────────────────────────
+/**
+ * Microsoft Clarity project id (section 8.3).
+ *
+ * SECURITY NOTE: This is a PUBLIC Clarity project id — it is intentionally
+ * client-visible (embedded in the page HTML to identify the analytics
+ * property). It is NOT a secret key and does NOT grant write/admin access to
+ * your Microsoft Clarity account.
+ *
+ * Empty string = analytics loader disabled (no Clarity config or script).
+ */
+export const CLARITY_PROJECT_ID = 'xg4mc52ro4' as const; // empty = disabled

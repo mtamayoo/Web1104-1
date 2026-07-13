@@ -141,7 +141,10 @@ const navLinks = [
 
     <!-- Copyright (PI-07) -->
     <div class="flex flex-col items-center gap-2 text-center sm:flex-row sm:justify-between">
-      <p class="text-xs text-white/30 no-select">{t('footer.copyright_extended')}</p>
+      <div class="space-y-1 sm:text-left">
+        <p class="text-xs text-white/30">{t('footer.privacy_analytics')}</p>
+        <p class="text-xs text-white/30 no-select">{t('footer.copyright_extended')}</p>
+      </div>
       <!-- Language links -->
       <nav aria-label="Language switcher" class="flex gap-3 text-xs text-white/30">
         <a href={`${base}/`}     hreflang="es-CO" lang="es-CO" class="hover:text-white transition-colors">ES</a>

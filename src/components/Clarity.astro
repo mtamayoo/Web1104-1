@@ -1,0 +1,40 @@
+---
+/**
+ * Microsoft Clarity analytics loader.
+ * Uses an external Astro component script so the strict meta CSP can keep
+ * script-src without 'unsafe-inline'. Project id is passed via data-*.
+ */
+import { CLARITY_PROJECT_ID } from '../config/site';
+---
+
+{CLARITY_PROJECT_ID && (
+  <>
+    <span id="clarity-config" data-clarity-id={CLARITY_PROJECT_ID} hidden></span>
+    <script>
+      // COOKIELESS: controlled by the "Cookie consent" toggle in the Clarity
+      // dashboard (Settings → Setup). We deliberately do NOT call
+      // window.clarity('consent'), so with that toggle enabled Clarity runs
+      // without setting cookies. No consent banner is used.
+      (function () {
+        const config = document.getElementById('clarity-config') as HTMLElement | null;
+        const projectId = config?.dataset.clarityId;
+        if (!projectId) return;
+
+        const win = window as Window & {
+          clarity?: ((...args: unknown[]) => void) & { q?: unknown[][] };
+        };
+
+        win.clarity = win.clarity || function (...args: unknown[]) {
+          (win.clarity!.q = win.clarity!.q || []).push(args);
+        };
+
+        const tag = document.createElement('script');
+        tag.async = true;
+        tag.src = `https://www.clarity.ms/tag/${encodeURIComponent(projectId)}`;
+
+        const firstScript = document.getElementsByTagName('script')[0];
+        firstScript?.parentNode?.insertBefore(tag, firstScript);
+      })();
+    </script>
+  </>
+)}
