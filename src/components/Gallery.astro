@@ -157,7 +157,7 @@ const localizedAlt = galleryItems.map((item) => t(item.altKey));
     <p id="lb-title" class="sr-only">{t('gallery.fullscreen_open')}</p>
 
     <!-- Counter (screen-reader-visible, visually shown) -->
-    <p id="lb-counter" class="mb-3 text-sm font-medium text-white/60" aria-live="polite" aria-atomic="true"></p>
+    <p id="lb-counter" class="mb-3 text-sm font-medium text-white/60" aria-live="polite" aria-atomic="true" data-image-of={t('gallery.image_of')}></p>
 
     <!-- Close button -->
     <button
@@ -217,28 +217,33 @@ const localizedAlt = galleryItems.map((item) => t(item.altKey));
   </div>
 </dialog>
 
-<script define:vars={{ imageOf: t('gallery.image_of') }}>
+<script>
   // Gallery: category filter + accessible lightbox
   // PI-02: contextmenu prevention on gallery images
-  const dialog   = document.getElementById('gallery-lightbox');
-  const lbImg    = document.getElementById('lb-img');
+  // NOTE: no `define:vars` here — that would force an inline script, which the
+  // strict CSP (script-src 'self', no 'unsafe-inline') blocks. Astro bundles
+  // this as an external module served from 'self'. The translated "image of"
+  // string is read from the #lb-counter data attribute instead.
+  const dialog   = document.getElementById('gallery-lightbox') as HTMLDialogElement | null;
+  const lbImg    = document.getElementById('lb-img') as HTMLImageElement | null;
   const lbCaption= document.getElementById('lb-caption');
   const lbCounter= document.getElementById('lb-counter');
+  const imageOf  = lbCounter?.dataset.imageOf || '/';
   const lbClose  = document.getElementById('lb-close');
   const lbPrev   = document.getElementById('lb-prev');
   const lbNext   = document.getElementById('lb-next');
 
   // Build ordered list of VISIBLE gallery items
-  let visibleItems = [];
+  let visibleItems: HTMLElement[] = [];
   let currentIndex = 0;
 
   function buildVisibleList() {
     visibleItems = Array.from(
-      document.querySelectorAll('.gallery-item:not([hidden]) [data-lightbox-index]')
+      document.querySelectorAll<HTMLElement>('.gallery-item:not([hidden]) [data-lightbox-index]')
     );
   }
 
-  function showImage(idx) {
+  function showImage(idx: number) {
     const btn  = visibleItems[idx];
     if (!btn) return;
     const img  = btn.querySelector('img');
@@ -250,7 +255,7 @@ const localizedAlt = galleryItems.map((item) => t(item.altKey));
     currentIndex = idx;
   }
 
-  function openLightbox(idx) {
+  function openLightbox(idx: number) {
     buildVisibleList();
     showImage(idx);
     dialog?.showModal();
@@ -272,7 +277,7 @@ const localizedAlt = galleryItems.map((item) => t(item.altKey));
   }
 
   // Open lightbox on thumbnail click
-  document.querySelectorAll('[data-lightbox-index]').forEach((btn) => {
+  document.querySelectorAll<HTMLElement>('[data-lightbox-index]').forEach((btn) => {
     btn.addEventListener('click', () => {
       buildVisibleList();
       const rawIdx = parseInt(btn.getAttribute('data-lightbox-index') || '0', 10);
@@ -300,7 +305,7 @@ const localizedAlt = galleryItems.map((item) => t(item.altKey));
   dialog?.addEventListener('keydown', (e) => {
     if (e.key !== 'Tab') return;
     const focusable = Array.from(
-      dialog.querySelectorAll('button:not([disabled])')
+      dialog.querySelectorAll<HTMLButtonElement>('button:not([disabled])')
     );
     if (!focusable.length) return;
     const first = focusable[0];
@@ -333,7 +338,7 @@ const localizedAlt = galleryItems.map((item) => t(item.altKey));
       btn.setAttribute('aria-pressed', 'true');
       btn.setAttribute('data-active', '');
 
-      document.querySelectorAll('.gallery-item').forEach((item) => {
+      document.querySelectorAll<HTMLElement>('.gallery-item').forEach((item) => {
         const cat = item.getAttribute('data-category');
         if (filter === 'all' || cat === filter) {
           item.removeAttribute('hidden');

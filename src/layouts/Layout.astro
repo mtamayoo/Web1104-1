@@ -126,9 +126,13 @@ const jsonLdHash = createHash('sha256').update(jsonLdString, 'utf8').digest('bas
  * See public/_headers for the full header set applied when a CDN/Cloudflare is in front.
  * See .squad/decisions/inbox/data-csp-policy.md for rationale.
  *
+ * script-src: 'self' covers ALL component scripts because they are emitted as
+ * external /_astro/*.js files (astro.config.mjs vite.build.assetsInlineLimit: 0).
+ * Only the inline JSON-LD block needs a hash. NO 'unsafe-inline' for scripts.
+ *
  * Allowed sources:
- *   scripts   : self + hash-pinned JSON-LD + Cloudflare Analytics (static.cloudflareinsights.com)
- *   styles    : self + unsafe-inline (Astro/Tailwind injects inline styles at build time)
+ *   scripts   : self (external bundles) + hash-pinned JSON-LD + Cloudflare Analytics
+ *   styles    : self + unsafe-inline (Tailwind + inline style attributes at build time)
  *   images    : self + data: (no cross-origin images rendered at runtime — H-02)
  *   fonts     : self (no external font CDN in v1)
  *   frames    : google.com (Google Maps embed — RF-07)

@@ -30,7 +30,7 @@ const options: { locale: Locale; hreflang: string; label: string; href: string; 
 ];
 ---
 
-<nav aria-label={t('lang.pick')} class="flex items-center gap-0.5 text-sm">
+<nav aria-label={t('lang.pick')} class="flex items-center gap-0.5 text-sm" data-lang-base={base} data-lang-current={locale}>
   {options.map(({ locale: l, hreflang, label, href, flag }) => (
     <a
       href={href}
@@ -58,8 +58,18 @@ const options: { locale: Locale; hreflang: string; label: string; href: string; 
   is English or French. Marks the session as "done" immediately so it never
   redirects more than once per tab session.
 -->
-<script define:vars={{ base, locale }}>
+<script>
+  // First-visit browser language detection (RF-02).
+  // NOTE: no `define:vars` here — that forces an inline script, which the strict
+  // CSP (script-src 'self', no 'unsafe-inline') blocks. Astro emits this as an
+  // external module (served from 'self'); base/locale are read from data-* on the
+  // language <nav> instead of being baked into inline script text.
   (function () {
+    const el = document.querySelector('[data-lang-current]') as HTMLElement | null;
+    if (!el) return;
+    const base = el.dataset.langBase || '';
+    const locale = el.dataset.langCurrent || 'es';
+
     const KEY = 'dis-lang-detected';
     if (sessionStorage.getItem(KEY)) return;
     sessionStorage.setItem(KEY, '1');

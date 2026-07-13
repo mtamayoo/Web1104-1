@@ -58,5 +58,16 @@ export default defineConfig({
   },
   vite: {
     plugins: [tailwindcss()],
+    build: {
+      // DECISION (OBJ-SEC-03): Force Astro to emit hoisted component scripts
+      // (Nav, Hero, Gallery lightbox) as EXTERNAL files under /_astro/ instead
+      // of inlining them. Astro inlines a script only when it has no imports AND
+      // its size is below this limit; setting it to 0 disables inlining, so the
+      // scripts are served from 'self' and satisfy a strict `script-src 'self'`
+      // CSP with NO 'unsafe-inline' and no fragile per-script hashes.
+      // Inlined scripts were being blocked by the strict meta CSP, which is why
+      // the gallery lightbox stopped opening. See .squad/decisions/inbox/data-csp-policy.md.
+      assetsInlineLimit: 0,
+    },
   },
 });
